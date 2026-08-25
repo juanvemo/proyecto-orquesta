@@ -13,11 +13,11 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
   { label: "Principal", items: [
     { label: "Dashboard", path: "/", icon: Gauge, permission: "dashboard.view" },
     { label: "Mi disponibilidad", path: "/mi-disponibilidad", icon: CalendarCheck2, permission: "portal.use" },
-    { label: "Calendario", path: "/calendario", icon: CalendarDays, phase: 3 },
+    { label: "Calendario", path: "/calendario", icon: CalendarDays, permission: "rehearsals.view" },
   ] },
   { label: "Operación musical", items: [
     { label: "Músicos", path: "/musicos", icon: UsersRound, permission: "musicians.view" },
-    { label: "Ensayos", path: "/ensayos", icon: ClipboardList, phase: 3 },
+    { label: "Ensayos", path: "/ensayos", icon: ClipboardList, permission: "rehearsals.view" },
     { label: "Repertorio", path: "/repertorio", icon: Music2, phase: 4 },
     { label: "Eventos", path: "/eventos", icon: Sparkles, phase: 6 },
     { label: "Producción técnica", path: "/produccion", icon: SlidersHorizontal, phase: 7 },
