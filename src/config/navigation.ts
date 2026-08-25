@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, FileText, Gauge, HandCoins, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UsersRound, UserRoundCog } from "lucide-react";
+import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, FileText, Gauge, HandCoins, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -12,6 +12,7 @@ export interface NavItem {
 export const navigationGroups: { label: string; items: NavItem[] }[] = [
   { label: "Principal", items: [
     { label: "Dashboard", path: "/", icon: Gauge, permission: "dashboard.view" },
+    { label: "Mi perfil", path: "/mi-perfil", icon: UserRound, permission: "portal.use" },
     { label: "Mi disponibilidad", path: "/mi-disponibilidad", icon: CalendarCheck2, permission: "portal.use" },
     { label: "Mis aportes", path: "/mis-aportes", icon: HandCoins, permission: "portal.use" },
     { label: "Calendario", path: "/calendario", icon: CalendarDays, permission: "rehearsals.view" },

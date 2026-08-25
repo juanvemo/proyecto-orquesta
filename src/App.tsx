@@ -14,9 +14,11 @@ import MusicianProfile from "@/pages/MusicianProfile";
 import Musicians from "@/pages/Musicians";
 import MyAvailability from "@/pages/MyAvailability";
 import MyContributions from "@/pages/MyContributions";
+import MyProfile from "@/pages/MyProfile";
 import PendingApproval from "@/pages/PendingApproval";
 import RehearsalControl from "@/pages/RehearsalControl";
 import Rehearsals from "@/pages/Rehearsals";
+import ResetPassword from "@/pages/ResetPassword";
 import Repertoire from "@/pages/Repertoire";
 import Roles from "@/pages/Roles";
 import Settings from "@/pages/Settings";
@@ -36,11 +38,13 @@ export default function App() {
             <AuthProvider>
               <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/actualizar-clave" element={<ResetPassword />} />
                 <Route path="/acceso-pendiente" element={<PendingApproval />} />
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AppShell />}>
                     <Route index element={<Index />} />
                     <Route element={<PermissionRoute permission="portal.use" />}>
+                      <Route path="mi-perfil" element={<MyProfile />} />
                       <Route path="mi-disponibilidad" element={<MyAvailability />} />
                       <Route path="mis-aportes" element={<MyContributions />} />
                     </Route>

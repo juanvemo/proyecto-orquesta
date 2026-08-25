@@ -60,6 +60,9 @@ export interface Musician {
   whatsapp: string | null;
   email: string | null;
   city: string | null;
+  address: string | null;
+  eps: string | null;
+  cali_commune: number | null;
   photo_url: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
@@ -91,6 +94,9 @@ export interface MusicianFormValues {
   whatsapp: string;
   email: string;
   city: string;
+  address: string;
+  eps: string;
+  cali_commune: string;
   photo_url: string;
   emergency_contact_name: string;
   emergency_contact_phone: string;
@@ -113,7 +119,7 @@ export interface MusicianFormValues {
 
 export const emptyMusicianForm: MusicianFormValues = {
   first_name: "", last_name: "", document_type: "CC", document_number: "", birth_date: "",
-  phone: "", whatsapp: "", email: "", city: "Cali", photo_url: "", emergency_contact_name: "",
+  phone: "", whatsapp: "", email: "", city: "Cali", address: "", eps: "", cali_commune: "", photo_url: "", emergency_contact_name: "",
   emergency_contact_phone: "", observations: "", level: "INTERMEDIO", specialty: "",
   experience_years: "", biography: "", joined_at: new Date().toISOString().slice(0, 10), status: "ACTIVO",
   participation_type: "PLANTA", habitual_rate: "0", event_rate: "0", rehearsal_rate: "0",

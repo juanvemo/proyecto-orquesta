@@ -29,6 +29,7 @@ export default function PendingApproval() {
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Cuenta</p>
           <p className="mt-1 font-bold">{user?.firstName} {user?.lastName}</p>
           <p className="text-sm text-muted-foreground">{user?.email}</p>
+          {session?.user.user_metadata?.address && <div className="mt-4 grid gap-3 border-t pt-4 sm:grid-cols-2"><div><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Dirección</p><p className="text-sm font-semibold">{session.user.user_metadata.address}</p></div><div><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">EPS</p><p className="text-sm font-semibold">{session.user.user_metadata.eps}</p></div><div><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Emergencia</p><p className="text-sm font-semibold">{session.user.user_metadata.emergency_contact_name}</p></div><div><p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Teléfono</p><p className="text-sm font-semibold">{session.user.user_metadata.emergency_contact_phone}</p></div></div>}
         </div>
         <div className="mt-7 grid gap-3 sm:grid-cols-2">
           <Button onClick={() => void refreshAccess()} className="h-12 rounded-xl font-bold"><RefreshCw className="mr-2 size-4" /> Revisar estado</Button>
