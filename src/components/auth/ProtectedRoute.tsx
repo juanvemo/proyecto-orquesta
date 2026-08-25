@@ -32,3 +32,9 @@ export function PermissionRoute({ permission }: { permission: string }) {
   if (!hasPermission(permission)) return <Navigate to="/" replace />;
   return <Outlet />;
 }
+
+export function AnyPermissionRoute({ permissions }: { permissions: string[] }) {
+  const { hasPermission } = useAuth();
+  if (!permissions.some(hasPermission)) return <Navigate to="/" replace />;
+  return <Outlet />;
+}

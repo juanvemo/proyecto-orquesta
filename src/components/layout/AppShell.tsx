@@ -10,7 +10,7 @@ function Brand() {
   return (
     <div className="flex h-[88px] items-center gap-3 px-5">
       <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-1 shadow-sm"><img src={organization?.logoUrl ?? "/assets/proyecto-orquesta-logo.png"} alt={organization?.name ?? "Proyecto Orquesta"} className="h-full w-full object-contain" /></div>
-      <div className="min-w-0"><p className="truncate text-sm font-black tracking-tight text-sidebar-foreground">{organization?.name ?? "Proyecto Orquesta"}</p><p className="text-xs font-bold tracking-[0.2em] text-primary">GESTIÓN</p></div>
+      <div className="min-w-0"><p className="truncate text-sm font-black tracking-tight text-sidebar-foreground">Portal Proyecto Orquesta</p><p className="text-xs font-bold tracking-[0.2em] text-primary">{organization?.name ?? "PROYECTO ORQUESTA"}</p></div>
     </div>
   );
 }

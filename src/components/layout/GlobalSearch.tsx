@@ -45,7 +45,7 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
   }, [open, query, membership, hasPermission]);
 
   const items = useMemo(() => navigationGroups.flatMap((group) => group.items)
-    .filter((item) => !item.phase && (!item.permission || hasPermission(item.permission)))
+    .filter((item) => !item.phase && (!item.permission || hasPermission(item.permission)) && (!item.anyPermission || item.anyPermission.some(hasPermission)))
     .filter((item) => item.label.toLowerCase().includes(query.toLowerCase())), [query, hasPermission]);
 
   return (
@@ -54,7 +54,7 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
         <DialogTitle className="sr-only">Búsqueda global</DialogTitle>
         <div className="flex items-center border-b px-5">
           <Search className="size-5 text-muted-foreground" />
-          <Input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar en Orquesta Gestión…" className="h-16 border-0 bg-transparent text-base shadow-none focus-visible:ring-0" />
+          <Input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar en Portal Proyecto Orquesta…" className="h-16 border-0 bg-transparent text-base shadow-none focus-visible:ring-0" />
           <kbd className="rounded-lg border bg-muted px-2 py-1 text-[10px] font-bold text-muted-foreground">ESC</kbd>
         </div>
         <div className="max-h-[360px] overflow-y-auto p-3">

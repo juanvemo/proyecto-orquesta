@@ -4,10 +4,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ProtectedRoute, PermissionRoute } from "@/components/auth/ProtectedRoute";
+import { AnyPermissionRoute, ProtectedRoute, PermissionRoute } from "@/components/auth/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
 import { AuthProvider } from "@/contexts/AuthContext";
 import CalendarPage from "@/pages/CalendarPage";
+import Clients from "@/pages/Clients";
+import DataPolicy from "@/pages/DataPolicy";
+import Events from "@/pages/Events";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import MusicianProfile from "@/pages/MusicianProfile";
@@ -16,10 +19,16 @@ import MyAvailability from "@/pages/MyAvailability";
 import MyContributions from "@/pages/MyContributions";
 import MyProfile from "@/pages/MyProfile";
 import PendingApproval from "@/pages/PendingApproval";
+import PublicHome from "@/pages/PublicHome";
+import PublicQuote from "@/pages/PublicQuote";
+import QuoteRequestDetail from "@/pages/QuoteRequestDetail";
+import QuoteRequests from "@/pages/QuoteRequests";
 import RehearsalControl from "@/pages/RehearsalControl";
 import Rehearsals from "@/pages/Rehearsals";
+import RequestQuote from "@/pages/RequestQuote";
 import ResetPassword from "@/pages/ResetPassword";
 import Repertoire from "@/pages/Repertoire";
+import RegistrationCatalogs from "@/pages/RegistrationCatalogs";
 import Roles from "@/pages/Roles";
 import Settings from "@/pages/Settings";
 import Users from "@/pages/Users";
@@ -37,6 +46,10 @@ export default function App() {
           <BrowserRouter>
             <AuthProvider>
               <Routes>
+                <Route path="/proyecto-orquesta" element={<PublicHome />} />
+                <Route path="/solicitar-cotizacion" element={<RequestQuote />} />
+                <Route path="/cotizacion/:token" element={<PublicQuote />} />
+                <Route path="/politica-datos" element={<DataPolicy />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/actualizar-clave" element={<ResetPassword />} />
                 <Route path="/acceso-pendiente" element={<PendingApproval />} />
@@ -60,11 +73,25 @@ export default function App() {
                     <Route element={<PermissionRoute permission="repertoire.view" />}>
                       <Route path="repertorio" element={<Repertoire />} />
                     </Route>
+                    <Route element={<PermissionRoute permission="clients.manage" />}>
+                      <Route path="clientes" element={<Clients />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="quotes.manage" />}>
+                      <Route path="solicitudes" element={<QuoteRequests />} />
+                      <Route path="solicitudes/:id" element={<QuoteRequestDetail />} />
+                      <Route path="cotizaciones" element={<QuoteRequests />} />
+                    </Route>
+                    <Route element={<AnyPermissionRoute permissions={["events.manage", "quotes.manage"]} />}>
+                      <Route path="eventos" element={<Events />} />
+                    </Route>
                     <Route element={<PermissionRoute permission="users.view" />}>
                       <Route path="usuarios" element={<Users />} />
                     </Route>
                     <Route element={<PermissionRoute permission="roles.manage" />}>
                       <Route path="roles" element={<Roles />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="musicians.manage" />}>
+                      <Route path="catalogos-registro" element={<RegistrationCatalogs />} />
                     </Route>
                     <Route element={<PermissionRoute permission="organization.manage" />}>
                       <Route path="configuracion" element={<Settings />} />

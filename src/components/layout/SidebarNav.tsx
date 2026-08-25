@@ -12,7 +12,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="space-y-6 px-3 pb-6">
       {navigationGroups.map((group) => {
-        const visibleItems = group.items.filter((item) => item.phase || !item.permission || hasPermission(item.permission));
+        const visibleItems = group.items.filter((item) => item.phase || ((!item.permission || hasPermission(item.permission)) && (!item.anyPermission || item.anyPermission.some(hasPermission))));
         if (!visibleItems.length) return null;
         return (
           <div key={group.label}>

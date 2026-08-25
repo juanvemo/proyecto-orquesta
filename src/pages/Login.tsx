@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { ArrowRight, CheckCircle2, KeyRound, Music2, ShieldCheck } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { MusicianRegistrationForm } from "@/components/auth/MusicianRegistrationForm";
@@ -40,6 +40,7 @@ export default function Login() {
               </div>
               <h1 className="text-4xl font-black leading-[1.05] tracking-tight xl:text-6xl">Toda la operación.<br />Un mismo compás.</h1>
               <p className="mt-5 max-w-lg text-base leading-relaxed text-white/75 xl:text-lg">Dirección artística, administración, producción y finanzas conectadas en una plataforma profesional.</p>
+              <Button asChild className="mt-7 h-12 rounded-xl bg-white px-6 font-black text-primary hover:bg-white/90"><Link to="/solicitar-cotizacion">COTIZA TU EVENTO <ArrowRight className="ml-2 size-4" /></Link></Button>
               <div className="mt-8 flex gap-6 text-sm text-white/80">
                 <span className="flex items-center gap-2"><CheckCircle2 className="size-4 text-violet-300" /> Multi-organización</span>
                 <span className="flex items-center gap-2"><ShieldCheck className="size-4 text-violet-300" /> Acceso por roles</span>
@@ -52,7 +53,7 @@ export default function Login() {
           <div className="w-full max-w-2xl">
             <img src="/assets/proyecto-orquesta-logo.png" alt="Proyecto Orquesta" className="mx-auto mb-8 h-24 w-auto lg:hidden" />
             <div className="mb-8">
-              <p className="mb-2 text-sm font-bold uppercase tracking-[0.18em] text-primary">Orquesta Gestión</p>
+              <p className="mb-2 text-sm font-bold uppercase tracking-[0.18em] text-primary">Portal Proyecto Orquesta</p>
               <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Bienvenido al escenario</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Inicia sesión o solicita acceso como músico. Todas las altas nuevas requieren aprobación de la dirección.</p>
             </div>

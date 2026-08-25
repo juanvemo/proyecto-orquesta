@@ -1,11 +1,12 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, FileText, Gauge, HandCoins, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
+import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, Database, FileText, Gauge, HandCoins, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
 
 export interface NavItem {
   label: string;
   path: string;
   icon: LucideIcon;
   permission?: string;
+  anyPermission?: string[];
   phase?: number;
 }
 
@@ -21,18 +22,20 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
     { label: "Músicos", path: "/musicos", icon: UsersRound, permission: "musicians.view" },
     { label: "Ensayos", path: "/ensayos", icon: ClipboardList, permission: "rehearsals.view" },
     { label: "Repertorio", path: "/repertorio", icon: Music2, permission: "repertoire.view" },
-    { label: "Eventos", path: "/eventos", icon: Sparkles, phase: 6 },
+    { label: "Eventos", path: "/eventos", icon: Sparkles, anyPermission: ["events.manage", "quotes.manage"] },
     { label: "Producción técnica", path: "/produccion", icon: SlidersHorizontal, phase: 7 },
   ] },
   { label: "Gestión", items: [
-    { label: "Clientes y CRM", path: "/clientes", icon: ContactRound, phase: 5 },
-    { label: "Cotizaciones", path: "/cotizaciones", icon: FileText, phase: 5 },
+    { label: "Clientes y CRM", path: "/clientes", icon: ContactRound, permission: "clients.manage" },
+    { label: "Solicitudes", path: "/solicitudes", icon: FileText, permission: "quotes.manage" },
+    { label: "Cotizaciones", path: "/cotizaciones", icon: FileText, permission: "quotes.manage" },
     { label: "Finanzas", path: "/finanzas", icon: CircleDollarSign, phase: 8 },
     { label: "Inventario", path: "/inventario", icon: PackageOpen, phase: 9 },
   ] },
   { label: "Administración", items: [
     { label: "Usuarios", path: "/usuarios", icon: UserRoundCog, permission: "users.view" },
     { label: "Roles y permisos", path: "/roles", icon: Boxes, permission: "roles.manage" },
+    { label: "Listas del registro", path: "/catalogos-registro", icon: Database, permission: "musicians.manage" },
     { label: "Configuración", path: "/configuracion", icon: Settings, permission: "organization.manage" },
   ] },
 ];
