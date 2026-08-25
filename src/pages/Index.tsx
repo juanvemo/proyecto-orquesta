@@ -45,6 +45,7 @@ export default function Index() {
   const { user, organization, membership } = useAuth();
   const navigate = useNavigate();
   const [musicianSummary, setMusicianSummary] = useState({ total: 0, active: 0, available: 0 });
+  const [rehearsalDebt, setRehearsalDebt] = useState({ count: 0, amount: 0 });
   const [nextRehearsal, setNextRehearsal] = useState<{ id: string; name: string; rehearsal_date: string; start_time: string; end_time: string; location: string; objective: string; rehearsal_musicians: Array<{ response_status: string; musician: { first_name: string; last_name: string } | null }> } | null>(null);
 
   useEffect(() => {
@@ -52,15 +53,19 @@ export default function Index() {
     Promise.all([
       supabase.from("musicians").select("status,availability(status)").eq("organization_id", membership.organizationId),
       supabase.from("rehearsals").select("id,name,rehearsal_date,start_time,end_time,location,objective,rehearsal_musicians(response_status,musician:musicians(first_name,last_name))").eq("organization_id", membership.organizationId).gte("rehearsal_date", new Date().toISOString().slice(0, 10)).not("status", "in", "(CANCELADO,FINALIZADO)").order("rehearsal_date").order("start_time").limit(1).maybeSingle(),
-    ]).then(([musicianResult, rehearsalResult]) => {
+      supabase.from("rehearsal_contributions").select("amount_due").eq("organization_id", membership.organizationId).eq("status", "PENDIENTE"),
+    ]).then(([musicianResult, rehearsalResult, contributionResult]) => {
       const rows = (musicianResult.data ?? []) as Array<{ status: string; availability: Array<{ status: string }> }>;
+      const contributions = contributionResult.data ?? [];
       setMusicianSummary({ total: rows.length, active: rows.filter((item) => item.status === "ACTIVO").length, available: rows.filter((item) => item.availability.some((entry) => entry.status === "DISPONIBLE")).length });
       setNextRehearsal(rehearsalResult.data as unknown as typeof nextRehearsal);
+      setRehearsalDebt({ count: contributions.length, amount: contributions.reduce((sum, item) => sum + Number(item.amount_due), 0) });
     });
   }, [membership]);
 
   const pendingRehearsalResponses = nextRehearsal?.rehearsal_musicians.filter((item) => item.response_status === "PENDIENTE").length ?? 0;
-  const operationalAlerts = nextRehearsal ? [{ text: `${pendingRehearsalResponses} músicos no han confirmado el ensayo`, detail: nextRehearsal.name, level: "Atención", icon: UsersRound, color: "text-orange-600 bg-orange-500/10" }, ...alerts.slice(1)] : alerts;
+  const contributionAlert = { text: `${formatCop(rehearsalDebt.amount)} en aportes pendientes`, detail: `${rehearsalDebt.count} deudas de ensayo`, level: "Aportes", icon: CircleDollarSign, color: "text-emerald-600 bg-emerald-500/10" };
+  const operationalAlerts = nextRehearsal ? [{ text: `${pendingRehearsalResponses} músicos no han confirmado el ensayo`, detail: nextRehearsal.name, level: "Atención", icon: UsersRound, color: "text-orange-600 bg-orange-500/10" }, ...alerts.slice(1, 3), contributionAlert] : [...alerts.slice(0, 3), contributionAlert];
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -98,7 +103,11 @@ export default function Index() {
         <Card className="rounded-[2rem] border shadow-none"><CardContent className="p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-lg font-black">Centro de alertas</p><p className="text-sm text-muted-foreground">Situaciones que requieren atención</p></div><Badge className="rounded-full bg-orange-500/10 text-orange-700 hover:bg-orange-500/10 dark:text-orange-400"><BellRing className="mr-1 size-3" /> 4 activas</Badge></div><div className="mt-5 divide-y">{operationalAlerts.map((alert) => <button key={alert.text} className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-muted/30 sm:px-2"><span className={`grid size-10 shrink-0 place-items-center rounded-xl ${alert.color}`}><alert.icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{alert.text}</span><span className="text-xs text-muted-foreground">{alert.detail}</span></span><span className="hidden text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:block">{alert.level}</span><ArrowRight className="size-4 text-muted-foreground" /></button>)}</div></CardContent></Card>
       </section>
 
-      <section className="rounded-[2rem] border border-primary/15 bg-primary/5 p-5 sm:flex sm:items-center sm:justify-between sm:p-6"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground"><CheckCircle2 className="size-6" /></span><div><p className="font-black">Operación musical conectada</p><p className="mt-1 max-w-2xl text-sm text-muted-foreground">La fundación, el directorio de músicos, la disponibilidad, el calendario y los ensayos ya comparten permisos, relaciones y datos operativos. Finanzas y eventos continúan como indicadores demostrativos hasta sus fases correspondientes.</p></div></div><Badge variant="outline" className="mt-4 rounded-xl border-primary/20 px-3 py-2 text-primary sm:mt-0"><UserCheck className="mr-2 size-4" /> Fase 3</Badge></section>
+      <section className="rounded-[2rem] border border-primary/15 bg-primary/5 p-5 sm:flex sm:items-center sm:justify-between sm:p-6"><div className="flex items-start gap-4"><span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground"><CheckCircle2 className="size-6" /></span><div><p className="font-black">Operación musical conectada</p><p className="mt-1 max-w-2xl text-sm text-muted-foreground">La fundación, músicos, ensayos, repertorio, setlists y aportes de ensayo comparten permisos y datos operativos. Los indicadores comerciales, de eventos y finanzas se conectarán en sus fases correspondientes.</p></div></div><Badge variant="outline" className="mt-4 rounded-xl border-primary/20 px-3 py-2 text-primary sm:mt-0"><UserCheck className="mr-2 size-4" /> Fase 4</Badge></section>
     </div>
   );
+}
+
+function formatCop(value: number) {
+  return new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(value);
 }

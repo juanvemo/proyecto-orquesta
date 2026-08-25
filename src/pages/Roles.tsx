@@ -15,7 +15,7 @@ const roleMeta: Record<string, { icon: typeof Shield; color: string; scope: stri
   MUSICIAN: { icon: UsersRound, color: "bg-orange-500/10 text-orange-600 dark:text-orange-400", scope: "Portal personal" },
   VIEWER: { icon: Eye, color: "bg-slate-500/10 text-slate-600 dark:text-slate-300", scope: "Solo lectura" },
 };
-const permissionNames: Record<string, string> = { "dashboard.view": "Dashboard", "organization.manage": "Organización", "users.view": "Usuarios", "users.approve": "Aprobaciones", "roles.manage": "Roles", "musicians.manage": "Músicos", "rehearsals.manage": "Ensayos", "events.manage": "Eventos", "repertoire.manage": "Repertorio", "technical.manage": "Producción técnica", "clients.manage": "Clientes", "quotes.manage": "Cotizaciones", "finances.manage": "Finanzas", "portal.use": "Mi espacio", "reports.view": "Reportes", "audit.view": "Auditoría" };
+const permissionNames: Record<string, string> = { "dashboard.view": "Dashboard", "organization.manage": "Organización", "users.view": "Usuarios", "users.approve": "Aprobaciones", "roles.manage": "Roles", "musicians.view": "Ver músicos", "musicians.manage": "Gestionar músicos", "rehearsals.view": "Ver ensayos", "rehearsals.manage": "Gestionar ensayos", "attendance.manage": "Gestionar asistencia", "repertoire.view": "Ver repertorio", "repertoire.manage": "Gestionar repertorio", "rehearsal_costs.manage": "Gestionar aportes", "events.manage": "Eventos", "technical.manage": "Producción técnica", "clients.manage": "Clientes", "quotes.manage": "Cotizaciones", "finances.manage": "Finanzas", "portal.use": "Mi espacio", "reports.view": "Reportes", "audit.view": "Auditoría" };
 
 export default function Roles() {
   const { membership } = useAuth();

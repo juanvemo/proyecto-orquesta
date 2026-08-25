@@ -13,9 +13,11 @@ import Login from "@/pages/Login";
 import MusicianProfile from "@/pages/MusicianProfile";
 import Musicians from "@/pages/Musicians";
 import MyAvailability from "@/pages/MyAvailability";
+import MyContributions from "@/pages/MyContributions";
 import PendingApproval from "@/pages/PendingApproval";
 import RehearsalControl from "@/pages/RehearsalControl";
 import Rehearsals from "@/pages/Rehearsals";
+import Repertoire from "@/pages/Repertoire";
 import Roles from "@/pages/Roles";
 import Settings from "@/pages/Settings";
 import Users from "@/pages/Users";
@@ -40,6 +42,7 @@ export default function App() {
                     <Route index element={<Index />} />
                     <Route element={<PermissionRoute permission="portal.use" />}>
                       <Route path="mi-disponibilidad" element={<MyAvailability />} />
+                      <Route path="mis-aportes" element={<MyContributions />} />
                     </Route>
                     <Route element={<PermissionRoute permission="musicians.view" />}>
                       <Route path="musicos" element={<Musicians />} />
@@ -49,6 +52,9 @@ export default function App() {
                       <Route path="calendario" element={<CalendarPage />} />
                       <Route path="ensayos" element={<Rehearsals />} />
                       <Route path="ensayos/:id" element={<RehearsalControl />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="repertoire.view" />}>
+                      <Route path="repertorio" element={<Repertoire />} />
                     </Route>
                     <Route element={<PermissionRoute permission="users.view" />}>
                       <Route path="usuarios" element={<Users />} />

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, FileText, Gauge, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UsersRound, UserRoundCog } from "lucide-react";
+import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, FileText, Gauge, HandCoins, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UsersRound, UserRoundCog } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -13,12 +13,13 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
   { label: "Principal", items: [
     { label: "Dashboard", path: "/", icon: Gauge, permission: "dashboard.view" },
     { label: "Mi disponibilidad", path: "/mi-disponibilidad", icon: CalendarCheck2, permission: "portal.use" },
+    { label: "Mis aportes", path: "/mis-aportes", icon: HandCoins, permission: "portal.use" },
     { label: "Calendario", path: "/calendario", icon: CalendarDays, permission: "rehearsals.view" },
   ] },
   { label: "Operación musical", items: [
     { label: "Músicos", path: "/musicos", icon: UsersRound, permission: "musicians.view" },
     { label: "Ensayos", path: "/ensayos", icon: ClipboardList, permission: "rehearsals.view" },
-    { label: "Repertorio", path: "/repertorio", icon: Music2, phase: 4 },
+    { label: "Repertorio", path: "/repertorio", icon: Music2, permission: "repertoire.view" },
     { label: "Eventos", path: "/eventos", icon: Sparkles, phase: 6 },
     { label: "Producción técnica", path: "/produccion", icon: SlidersHorizontal, phase: 7 },
   ] },

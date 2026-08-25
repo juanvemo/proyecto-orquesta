@@ -37,8 +37,8 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         );
       })}
       <div className="mx-1 rounded-2xl border border-primary/15 bg-primary/5 p-3">
-        <div className="flex items-center justify-between"><p className="text-xs font-bold text-primary">Operación musical</p><Badge variant="outline" className="rounded-lg border-primary/20 text-[9px] text-primary">FASE 3</Badge></div>
-        <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">Músicos, disponibilidad, calendario y ensayos conectados.</p>
+        <div className="flex items-center justify-between"><p className="text-xs font-bold text-primary">Operación musical</p><Badge variant="outline" className="rounded-lg border-primary/20 text-[9px] text-primary">FASE 4</Badge></div>
+        <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">Músicos, ensayos, repertorio y setlists conectados.</p>
       </div>
     </nav>
   );
