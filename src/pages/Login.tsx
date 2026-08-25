@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { assetUrl } from "@/lib/assets";
 
 export default function Login() {
   const { session, membership, loading } = useAuth();
@@ -28,11 +29,11 @@ export default function Login() {
     <main className="min-h-screen bg-[#f6f4fb] p-3 dark:bg-[#0d0b16] sm:p-5">
       <div className="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-[1440px] overflow-hidden rounded-[2rem] border border-white/70 bg-background shadow-2xl shadow-violet-950/10 dark:border-white/10 lg:grid-cols-[1.08fr_.92fr]">
         <section className="relative hidden overflow-hidden lg:block">
-          <img src="/assets/orquesta-stage-hero.png" alt="Orquesta tropical en escenario" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={assetUrl("/assets/orquesta-stage-hero.png")} alt="Orquesta tropical en escenario" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-[#151029]/45" />
           <div className="relative z-10 flex h-full flex-col justify-between p-10 xl:p-14">
             <div className="w-fit rounded-2xl bg-white/90 p-3 shadow-xl backdrop-blur">
-              <img src="/assets/proyecto-orquesta-logo.png" alt="Proyecto Orquesta" className="h-20 w-auto" />
+              <img src={assetUrl("/assets/proyecto-orquesta-logo.png")} alt="Proyecto Orquesta" className="h-20 w-auto" />
             </div>
             <div className="max-w-xl text-white">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur">
@@ -51,7 +52,7 @@ export default function Login() {
 
         <section className="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
           <div className="w-full max-w-2xl">
-            <img src="/assets/proyecto-orquesta-logo.png" alt="Proyecto Orquesta" className="mx-auto mb-8 h-24 w-auto lg:hidden" />
+            <img src={assetUrl("/assets/proyecto-orquesta-logo.png")} alt="Proyecto Orquesta" className="mx-auto mb-8 h-24 w-auto lg:hidden" />
             <div className="mb-8">
               <p className="mb-2 text-sm font-bold uppercase tracking-[0.18em] text-primary">Portal Proyecto Orquesta</p>
               <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Bienvenido al escenario</h2>

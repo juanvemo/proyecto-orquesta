@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -40,6 +40,7 @@ import Users from "@/pages/Users";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
+const Router = import.meta.env.BASE_URL === "/" ? BrowserRouter : HashRouter;
 
 export default function App() {
   return (
@@ -48,7 +49,7 @@ export default function App() {
         <TooltipProvider>
           <Toaster />
           <Sonner richColors position="top-right" />
-          <BrowserRouter>
+          <Router>
             <AuthProvider>
               <Routes>
                 <Route path="/proyecto-orquesta" element={<PublicHome />} />
@@ -121,7 +122,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AuthProvider>
-          </BrowserRouter>
+          </Router>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>

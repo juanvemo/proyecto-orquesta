@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
+import { assetUrl } from "@/lib/assets";
 import { CelebrationsBanner } from "./CelebrationsBanner";
 import { NavigationClickSound } from "./NavigationClickSound";
 import { SidebarNav } from "./SidebarNav";
@@ -11,7 +12,7 @@ function Brand() {
   const { organization } = useAuth();
   return (
     <div className="flex h-[88px] items-center gap-3 px-5">
-      <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-1 shadow-sm"><img src={organization?.logoUrl ?? "/assets/proyecto-orquesta-logo.png"} alt={organization?.name ?? "Proyecto Orquesta"} className="h-full w-full object-contain" /></div>
+      <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-white p-1 shadow-sm"><img src={assetUrl(organization?.logoUrl ?? "/assets/proyecto-orquesta-logo.png")} alt={organization?.name ?? "Proyecto Orquesta"} className="h-full w-full object-contain" /></div>
       <div className="min-w-0"><p className="truncate text-sm font-black tracking-tight text-sidebar-foreground">Portal Proyecto Orquesta</p><p className="text-xs font-bold tracking-[0.2em] text-primary">{organization?.name ?? "PROYECTO ORQUESTA"}</p></div>
     </div>
   );

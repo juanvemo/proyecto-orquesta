@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CatalogManager } from "@/features/musicians/CatalogManager";
 import { deleteMusician, getMusicianCatalogs, listMusicians } from "@/features/musicians/service";
 import type { Instrument, MusicalRole, Musician } from "@/features/musicians/types";
+import { assetUrl } from "@/lib/assets";
 
 const statusTone: Record<string, string> = {
   ACTIVO: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
@@ -132,7 +133,7 @@ export default function Musicians() {
               })}
             </div>
           ) : (
-            <Card className="rounded-[2rem] shadow-none"><CardContent className="p-12 text-center"><img src="/assets/music-operations-empty.png" alt="Sin resultados" className="mx-auto h-36 rounded-2xl" /><h2 className="mt-5 text-xl font-black">No encontramos músicos</h2><p className="mt-2 text-sm text-muted-foreground">Ajusta los filtros o aprueba un usuario nuevo para crear su ficha vinculada.</p></CardContent></Card>
+            <Card className="rounded-[2rem] shadow-none"><CardContent className="p-12 text-center"><img src={assetUrl("/assets/music-operations-empty.png")} alt="Sin resultados" className="mx-auto h-36 rounded-2xl" /><h2 className="mt-5 text-xl font-black">No encontramos músicos</h2><p className="mt-2 text-sm text-muted-foreground">Ajusta los filtros o aprueba un usuario nuevo para crear su ficha vinculada.</p></CardContent></Card>
           )}
         </TabsContent>
         <TabsContent value="catalogs"><CatalogManager organizationId={membership?.organizationId ?? ""} instruments={instruments} roles={roles} canManage={canManage} onChanged={() => void load()} /></TabsContent>
