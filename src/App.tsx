@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnyPermissionRoute, ProtectedRoute, PermissionRoute } from "@/components/auth/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import CalendarPage from "@/pages/CalendarPage";
 import Clients from "@/pages/Clients";
 import CommercialFormSettings from "@/pages/CommercialFormSettings";
@@ -58,7 +58,7 @@ export default function App() {
                 <Route path="/acceso-pendiente" element={<PendingApproval />} />
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AppShell />}>
-                    <Route index element={<Index />} />
+                    <Route index element={<RoleHome />} />
                     <Route element={<PermissionRoute permission="portal.use" />}>
                       <Route path="mi-perfil" element={<MyProfile />} />
                       <Route path="mi-disponibilidad" element={<MyAvailability />} />
@@ -118,4 +118,11 @@ export default function App() {
       </ThemeProvider>
     </QueryClientProvider>
   );
+}
+
+function RoleHome() {
+  const { membership } = useAuth();
+  if (membership?.roleCode === "DIRECTOR_MUSICAL") return <Navigate to="/direccion-musical" replace />;
+  if (membership?.roleCode === "MUSICIAN") return <Navigate to="/mi-trabajo-musical" replace />;
+  return <Index />;
 }

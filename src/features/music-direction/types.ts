@@ -8,7 +8,7 @@ export interface TaskAssignee {
   status: TaskStatus;
   completion_comment: string | null;
   completed_at: string | null;
-  musician: { id: string; user_id: string | null; first_name: string; last_name: string; specialty: string | null; photo_url: string | null };
+  musician: { id: string; user_id: string | null; first_name: string; last_name: string; specialty: string | null; photo_url: string | null; musician_instruments: Array<{is_primary:boolean;instrument:{id:string;name:string}|null}> };
 }
 
 export interface MusicTask {
