@@ -1,5 +1,5 @@
 export type ApprovalStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
-export type RoleCode = "ADMIN" | "DIRECTOR" | "ADMINISTRATION" | "MUSICIAN" | "VIEWER";
+export type RoleCode = "ADMIN" | "DIRECTOR" | "DIRECTOR_MUSICAL" | "ADMINISTRATION" | "MUSICIAN" | "VIEWER";
 
 export interface AppUser {
   id: string;

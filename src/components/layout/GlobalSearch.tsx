@@ -45,7 +45,7 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
   }, [open, query, membership, hasPermission]);
 
   const items = useMemo(() => navigationGroups.flatMap((group) => group.items)
-    .filter((item) => !item.phase && (!item.permission || hasPermission(item.permission)) && (!item.anyPermission || item.anyPermission.some(hasPermission)))
+    .filter((item) => (!item.permission || hasPermission(item.permission)) && (!item.anyPermission || item.anyPermission.some(hasPermission)))
     .filter((item) => item.label.toLowerCase().includes(query.toLowerCase())), [query, hasPermission]);
 
   return (

@@ -1,7 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { MusicTask, TaskFormValues, TaskStatus } from "./types";
 
-const taskSelect = "*,instrument:instruments(id,name),song:songs(id,name,status),rehearsal:rehearsals(id,name,rehearsal_date,start_time,location),event:events(id,name,event_date),music_task_assignees(*,musician:musicians(id,user_id,first_name,last_name,specialty,photo_url)),music_task_comments(*),music_task_attachments(*)";
+const taskSelect = "*,instrument:instruments(id,name),song:songs(id,name,status),rehearsal:rehearsals(id,name,rehearsal_date,start_time,location),event:events(id,name,event_date),music_task_assignees(*,musician:musicians(id,user_id,first_name,last_name,specialty,photo_url)),music_task_comments(*),music_task_attachments(*),music_task_history(*)";
+
+export async function expandRecurringTasks(organizationId: string) {
+  const { error } = await supabase.rpc("expand_recurring_music_tasks", { target_organization_id: organizationId });
+  if (error) throw error;
+}
 
 export async function listMusicTasks(organizationId: string) {
   const { data, error } = await supabase.from("music_tasks").select(taskSelect).eq("organization_id", organizationId).order("due_at", { ascending: true, nullsFirst: false });
@@ -12,7 +17,12 @@ export async function listMusicTasks(organizationId: string) {
 export async function createMusicTask(organizationId: string, values: TaskFormValues) {
   const { data, error } = await supabase.rpc("create_music_task", { task_data: { ...values, organization_id: organizationId, assigned_at: values.assigned_at ? new Date(values.assigned_at).toISOString() : null, due_at: values.due_at ? new Date(values.due_at).toISOString() : null }, selected_musician_ids: values.musician_ids });
   if (error) throw error;
-  return data as string;
+  const taskId=data as string;
+  const stageUpdate: { work_stage: TaskFormValues["work_stage"]; due_at?: null } = { work_stage: values.work_stage };
+  if (!values.due_at && (values.work_stage === "DURANTE" || values.work_stage === "POSTERIOR")) stageUpdate.due_at = null;
+  const { error: stageError } = await supabase.from("music_tasks").update(stageUpdate).eq("id",taskId).eq("organization_id",organizationId);
+  if(stageError)throw stageError;
+  return taskId;
 }
 
 export async function updateTaskStatus(assigneeId: string, status: TaskStatus, comment = "") {
