@@ -9,14 +9,17 @@ import { AppShell } from "@/components/layout/AppShell";
 import { AuthProvider } from "@/contexts/AuthContext";
 import CalendarPage from "@/pages/CalendarPage";
 import Clients from "@/pages/Clients";
+import CommercialFormSettings from "@/pages/CommercialFormSettings";
 import DataPolicy from "@/pages/DataPolicy";
 import Events from "@/pages/Events";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
+import MusicDirection from "@/pages/MusicDirection";
 import MusicianProfile from "@/pages/MusicianProfile";
 import Musicians from "@/pages/Musicians";
 import MyAvailability from "@/pages/MyAvailability";
 import MyContributions from "@/pages/MyContributions";
+import MyMusicWork from "@/pages/MyMusicWork";
 import MyProfile from "@/pages/MyProfile";
 import PendingApproval from "@/pages/PendingApproval";
 import PublicHome from "@/pages/PublicHome";
@@ -61,11 +64,17 @@ export default function App() {
                       <Route path="mi-disponibilidad" element={<MyAvailability />} />
                       <Route path="mis-aportes" element={<MyContributions />} />
                     </Route>
+                    <Route element={<PermissionRoute permission="tasks.self" />}>
+                      <Route path="mi-trabajo-musical" element={<MyMusicWork />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="tasks.manage" />}>
+                      <Route path="direccion-musical" element={<MusicDirection />} />
+                    </Route>
                     <Route element={<PermissionRoute permission="musicians.view" />}>
                       <Route path="musicos" element={<Musicians />} />
                       <Route path="musicos/:id" element={<MusicianProfile />} />
                     </Route>
-                    <Route element={<AnyPermissionRoute permissions={["rehearsals.view", "quotes.manage", "events.manage"]} />}>
+                    <Route element={<AnyPermissionRoute permissions={["rehearsals.view", "quotes.manage", "events.manage", "tasks.manage", "tasks.self"]} />}>
                       <Route path="calendario" element={<CalendarPage />} />
                     </Route>
                     <Route element={<PermissionRoute permission="rehearsals.view" />}>
@@ -97,6 +106,7 @@ export default function App() {
                     </Route>
                     <Route element={<PermissionRoute permission="organization.manage" />}>
                       <Route path="configuracion" element={<Settings />} />
+                      <Route path="configuracion-formulario" element={<CommercialFormSettings />} />
                     </Route>
                   </Route>
                 </Route>

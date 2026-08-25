@@ -73,6 +73,7 @@ export interface Musician {
   biography: string | null;
   joined_at: string | null;
   status: MusicianStatus;
+  current_availability_status: AvailabilityStatus;
   participation_type: string | null;
   habitual_rate: number;
   event_rate: number;

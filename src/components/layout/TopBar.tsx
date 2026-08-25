@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, Check, ChevronDown, LogOut, Menu, Moon, Search, Settings, Sun, User } from "lucide-react";
+import { Check, ChevronDown, LogOut, Menu, Moon, Search, Settings, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { GlobalSearch } from "./GlobalSearch";
+import { NotificationCenter } from "./NotificationCenter";
 
 export function TopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -27,9 +28,7 @@ export function TopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
           <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}>
             {resolvedTheme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}<span className="sr-only">Cambiar tema</span>
           </Button>
-          <Button variant="ghost" size="icon" className="relative rounded-xl">
-            <Bell className="size-4" /><span className="absolute right-2 top-2 size-2 rounded-full border-2 border-background bg-orange-500" /><span className="sr-only">Notificaciones</span>
-          </Button>
+          <NotificationCenter userId={user?.id} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="ml-1 flex items-center gap-2 rounded-xl p-1.5 pr-2 transition-colors hover:bg-muted">
@@ -41,7 +40,7 @@ export function TopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
             <DropdownMenuContent align="end" className="w-64 rounded-2xl p-2">
               <DropdownMenuLabel className="p-3"><p className="font-bold">{user?.firstName} {user?.lastName}</p><p className="truncate text-xs font-normal text-muted-foreground">{user?.email}</p><Badge className="mt-2 rounded-lg bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/10 dark:text-emerald-400"><Check className="mr-1 size-3" /> {membership?.roleName}</Badge></DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="rounded-xl py-2.5"><User className="mr-2 size-4" /> Mi perfil</DropdownMenuItem>
+              <DropdownMenuItem className="rounded-xl py-2.5" onClick={() => navigate("/mi-perfil")}><User className="mr-2 size-4" /> Mi perfil</DropdownMenuItem>
               {hasPermission("organization.manage") && <DropdownMenuItem className="rounded-xl py-2.5" onClick={() => navigate("/configuracion")}><Settings className="mr-2 size-4" /> Configuración</DropdownMenuItem>}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="rounded-xl py-2.5 text-destructive focus:text-destructive" onClick={() => void signOut()}><LogOut className="mr-2 size-4" /> Cerrar sesión</DropdownMenuItem>

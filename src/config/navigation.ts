@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, Database, FileText, Gauge, HandCoins, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
+import { Boxes, CalendarCheck2, CalendarDays, CircleDollarSign, ClipboardList, ContactRound, Database, FileText, Gauge, HandCoins, ListTodo, Music2, PackageOpen, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -15,10 +15,12 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
     { label: "Dashboard", path: "/", icon: Gauge, permission: "dashboard.view" },
     { label: "Mi perfil", path: "/mi-perfil", icon: UserRound, permission: "portal.use" },
     { label: "Mi disponibilidad", path: "/mi-disponibilidad", icon: CalendarCheck2, permission: "portal.use" },
+    { label: "Mi trabajo musical", path: "/mi-trabajo-musical", icon: ListTodo, permission: "tasks.self" },
     { label: "Mis aportes", path: "/mis-aportes", icon: HandCoins, permission: "portal.use" },
-    { label: "Calendario", path: "/calendario", icon: CalendarDays, anyPermission: ["rehearsals.view", "quotes.manage", "events.manage"] },
+    { label: "Calendario", path: "/calendario", icon: CalendarDays, anyPermission: ["rehearsals.view", "quotes.manage", "events.manage", "tasks.manage", "tasks.self"] },
   ] },
   { label: "Operación musical", items: [
+    { label: "Dirección Musical", path: "/direccion-musical", icon: ListTodo, permission: "tasks.manage" },
     { label: "Músicos", path: "/musicos", icon: UsersRound, permission: "musicians.view" },
     { label: "Ensayos", path: "/ensayos", icon: ClipboardList, permission: "rehearsals.view" },
     { label: "Repertorio", path: "/repertorio", icon: Music2, permission: "repertoire.view" },
@@ -36,6 +38,7 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
     { label: "Usuarios", path: "/usuarios", icon: UserRoundCog, permission: "users.view" },
     { label: "Roles y permisos", path: "/roles", icon: Boxes, permission: "roles.manage" },
     { label: "Listas del registro", path: "/catalogos-registro", icon: Database, permission: "musicians.manage" },
+    { label: "Formulario comercial", path: "/configuracion-formulario", icon: SlidersHorizontal, permission: "organization.manage" },
     { label: "Configuración", path: "/configuracion", icon: Settings, permission: "organization.manage" },
   ] },
 ];
