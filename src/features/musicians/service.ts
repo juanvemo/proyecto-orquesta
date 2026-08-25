@@ -74,6 +74,31 @@ export async function setMusicianStatus(organizationId: string, musicianId: stri
   if (error) throw error;
 }
 
+export async function deleteMusician(organizationId: string, musician: Pick<Musician, "id" | "user_id">) {
+  if (!musician.user_id) {
+    const { error } = await supabase.from("musicians").delete().eq("organization_id", organizationId).eq("id", musician.id);
+    if (error) throw error;
+    return;
+  }
+
+  const { error } = await supabase.functions.invoke("admin-manage-user", {
+    body: { action: "delete", organization_id: organizationId, user_id: musician.user_id },
+  });
+  if (!error) return;
+
+  let message = error.message;
+  const context = (error as { context?: Response }).context;
+  if (context) {
+    try {
+      const payload = await context.clone().json() as { error?: string };
+      if (payload.error) message = payload.error;
+    } catch {
+      // Preserve the invocation error when the response has no JSON body.
+    }
+  }
+  throw new Error(message);
+}
+
 export async function saveAvailability(entry: Omit<Availability, "id">, id?: string) {
   const result = id ? await supabase.from("availability").update({ ...entry, updated_at: new Date().toISOString() }).eq("id", id) : await supabase.from("availability").insert(entry);
   if (result.error) throw result.error;
