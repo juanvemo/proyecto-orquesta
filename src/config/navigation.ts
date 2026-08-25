@@ -30,6 +30,7 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
     { label: "Clientes y CRM", path: "/clientes", icon: ContactRound, permission: "clients.manage" },
     { label: "Solicitudes", path: "/solicitudes", icon: FileText, permission: "quotes.manage" },
     { label: "Cotizaciones", path: "/cotizaciones", icon: FileText, permission: "quotes.manage" },
+    { label: "Finanzas", path: "/finanzas", icon: HandCoins, permission: "finances.manage" },
   ] },
   { label: "Administración", items: [
     { label: "Usuarios", path: "/usuarios", icon: UserRoundCog, permission: "users.view" },

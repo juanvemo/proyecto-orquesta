@@ -23,20 +23,63 @@ serve(async (req) => {
     if (authError || !authData.user) return new Response(JSON.stringify({ error: "Sesión no válida" }), { status: 401, headers });
 
     const body = await req.json();
+    const action = String(body.action ?? "update");
     const organizationId = String(body.organization_id ?? "");
     const targetUserId = String(body.user_id ?? "");
+    if (!organizationId || !targetUserId) return new Response(JSON.stringify({ error: "Datos incompletos" }), { status: 400, headers });
+
+    const { data: allowed } = await userClient.rpc("has_org_permission", { target_organization_id: organizationId, permission_key: "users.approve" });
+    if (!allowed) return new Response(JSON.stringify({ error: "No tienes permiso para administrar usuarios" }), { status: 403, headers });
+
+    const admin = createClient(supabaseUrl, serviceKey);
+    const { data: membership } = await admin.from("organization_memberships").select("id,role_id,roles(code)").eq("organization_id", organizationId).eq("user_id", targetUserId).maybeSingle();
+    if (!membership) return new Response(JSON.stringify({ error: "El usuario no pertenece a esta organización" }), { status: 404, headers });
+
+    if (action === "delete") {
+      if (targetUserId === authData.user.id) return new Response(JSON.stringify({ error: "No puedes eliminar tu propio usuario administrador" }), { status: 400, headers });
+
+      const { data: actorMembership } = await admin.from("organization_memberships").select("roles(code)").eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("approval_status", "APPROVED").maybeSingle();
+      const actorRole = (actorMembership?.roles as { code?: string } | null)?.code;
+      if (actorRole !== "ADMIN") return new Response(JSON.stringify({ error: "Solo el administrador puede eliminar usuarios" }), { status: 403, headers });
+
+      const targetRole = (membership.roles as { code?: string } | null)?.code;
+      if (targetRole === "ADMIN") {
+        const { count } = await admin.from("organization_memberships").select("id,roles!inner(code)", { count: "exact", head: true }).eq("organization_id", organizationId).eq("approval_status", "APPROVED").eq("roles.code", "ADMIN");
+        if ((count ?? 0) <= 1) return new Response(JSON.stringify({ error: "No se puede eliminar el último administrador" }), { status: 409, headers });
+      }
+
+      const { data: musician } = await admin.from("musicians").select("id,first_name,last_name").eq("organization_id", organizationId).eq("user_id", targetUserId).maybeSingle();
+      if (musician) {
+        const relatedTables = ["event_musicians", "music_task_assignees", "rehearsal_attendance", "rehearsal_contributions", "rehearsal_musicians"];
+        const counts = await Promise.all(relatedTables.map((table) => admin.from(table).select("id", { count: "exact", head: true }).eq("musician_id", musician.id)));
+        if (counts.some((result) => (result.count ?? 0) > 0)) return new Response(JSON.stringify({ error: "Este músico tiene historial de eventos, ensayos, aportes o tareas. Suspende su acceso en lugar de eliminarlo." }), { status: 409, headers });
+
+        const { error: musicianDeleteError } = await admin.from("musicians").delete().eq("id", musician.id).eq("organization_id", organizationId);
+        if (musicianDeleteError) throw musicianDeleteError;
+      }
+
+      const nullableReferences = [
+        ["audit_logs", "user_id"], ["commercial_timeline", "actor_user_id"], ["event_availability", "checked_by"],
+        ["event_riders", "created_by"], ["events", "created_by"], ["financial_transactions", "created_by"],
+        ["organization_memberships", "approved_by"], ["quote_versions", "created_by"], ["quotes", "created_by"],
+      ] as const;
+      for (const [table, column] of nullableReferences) {
+        const { error } = await admin.from(table).update({ [column]: null }).eq(column, targetUserId);
+        if (error) throw error;
+      }
+
+      const { error: deleteError } = await admin.auth.admin.deleteUser(targetUserId);
+      if (deleteError) throw deleteError;
+      await admin.from("audit_logs").insert({ organization_id: organizationId, user_id: authData.user.id, action: "DELETE", entity_type: "user", entity_id: targetUserId, previous_value: { role: targetRole, musician_id: musician?.id ?? null }, new_value: { deleted: true } });
+      console.log("[admin-manage-user] Usuario eliminado", { actor: authData.user.id, target: targetUserId, musician: musician?.id ?? null });
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers });
+    }
+
     const firstName = String(body.first_name ?? "").trim();
     const lastName = String(body.last_name ?? "").trim();
     const password = body.password ? String(body.password) : "";
-    if (!organizationId || !targetUserId || firstName.length < 2 || lastName.length < 2) return new Response(JSON.stringify({ error: "Datos incompletos" }), { status: 400, headers });
+    if (firstName.length < 2 || lastName.length < 2) return new Response(JSON.stringify({ error: "Datos incompletos" }), { status: 400, headers });
     if (password && password.length < 8) return new Response(JSON.stringify({ error: "La contraseña debe tener mínimo 8 caracteres" }), { status: 400, headers });
-
-    const { data: allowed } = await userClient.rpc("has_org_permission", { target_organization_id: organizationId, permission_key: "users.approve" });
-    if (!allowed) return new Response(JSON.stringify({ error: "No tienes permiso para administrar credenciales" }), { status: 403, headers });
-
-    const admin = createClient(supabaseUrl, serviceKey);
-    const { data: membership } = await admin.from("organization_memberships").select("id").eq("organization_id", organizationId).eq("user_id", targetUserId).maybeSingle();
-    if (!membership) return new Response(JSON.stringify({ error: "El usuario no pertenece a esta organización" }), { status: 404, headers });
 
     const { error: profileError } = await admin.from("profiles").update({ first_name: firstName, last_name: lastName, updated_at: new Date().toISOString() }).eq("id", targetUserId);
     if (profileError) throw profileError;
@@ -52,7 +95,7 @@ serve(async (req) => {
     console.log("[admin-manage-user] Usuario actualizado", { actor: authData.user.id, target: targetUserId, passwordChanged: Boolean(password) });
     return new Response(JSON.stringify({ success: true }), { status: 200, headers });
   } catch (error) {
-    console.error("[admin-manage-user] Error al actualizar usuario", { error: error instanceof Error ? error.message : String(error) });
+    console.error("[admin-manage-user] Error administrando usuario", { error: error instanceof Error ? error.message : String(error) });
     return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Error interno" }), { status: 500, headers });
   }
 });

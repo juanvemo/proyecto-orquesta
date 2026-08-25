@@ -12,6 +12,7 @@ import Clients from "@/pages/Clients";
 import CommercialFormSettings from "@/pages/CommercialFormSettings";
 import DataPolicy from "@/pages/DataPolicy";
 import Events from "@/pages/Events";
+import Finances from "@/pages/Finances";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import MusicDirection from "@/pages/MusicDirection";
@@ -98,6 +99,9 @@ export default function App() {
                     </Route>
                     <Route element={<AnyPermissionRoute permissions={["technical.manage", "events.manage", "quotes.manage"]} />}>
                       <Route path="produccion-tecnica" element={<TechnicalProduction />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="finances.manage" />}>
+                      <Route path="finanzas" element={<Finances />} />
                     </Route>
                     <Route element={<PermissionRoute permission="users.view" />}>
                       <Route path="usuarios" element={<Users />} />
