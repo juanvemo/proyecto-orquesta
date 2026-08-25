@@ -47,7 +47,7 @@
 
 ## Módulos y fases
 
-La navegación declara todos los dominios para comunicar la arquitectura, pero solo activa Fundación. Músicos, ensayos, repertorio, CRM, eventos, rider, finanzas e inventario permanecen bloqueados hasta su fase correspondiente. Esto evita interfaces sin persistencia o flujos parciales.
+La navegación declara todos los dominios para comunicar la arquitectura. Fundación y Músicos están activos; ensayos, repertorio, CRM, eventos, rider, finanzas e inventario permanecen bloqueados hasta su fase correspondiente. Esto evita interfaces sin persistencia o flujos parciales.
 
 ## Convenciones para las siguientes fases
 

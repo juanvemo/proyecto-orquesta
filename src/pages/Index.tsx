@@ -1,10 +1,12 @@
-import { ArrowDownRight, ArrowRight, ArrowUpRight, BellRing, CalendarClock, CheckCircle2, CircleDollarSign, Clock3, FileWarning, MapPin, Music2, Sparkles, TrendingUp, UserCheck, UsersRound, WalletCards } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, BellRing, CalendarClock, CheckCircle2, CircleDollarSign, Clock3, FileWarning, MapPin, Music2, TrendingUp, UserCheck, UsersRound, WalletCards } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const financeData = [
   { month: "Oct", ingresos: 7.2, gastos: 4.4 }, { month: "Nov", ingresos: 9.8, gastos: 5.6 },
@@ -39,7 +41,17 @@ function MetricCard({ item }: { item: typeof metrics[number] }) {
 }
 
 export default function Index() {
-  const { user, organization } = useAuth();
+  const { user, organization, membership } = useAuth();
+  const [musicianSummary, setMusicianSummary] = useState({ total: 0, active: 0, available: 0 });
+
+  useEffect(() => {
+    if (!membership) return;
+    supabase.from("musicians").select("status,availability(status)").eq("organization_id", membership.organizationId).then(({ data }) => {
+      const rows = (data ?? []) as Array<{ status: string; availability: Array<{ status: string }> }>;
+      setMusicianSummary({ total: rows.length, active: rows.filter((item) => item.status === "ACTIVO").length, available: rows.filter((item) => item.availability.some((entry) => entry.status === "DISPONIBLE")).length });
+    });
+  }, [membership]);
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
@@ -71,7 +83,7 @@ export default function Index() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[.8fr_1.2fr]">
-        <Card className="rounded-[2rem] border shadow-none"><CardContent className="p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-lg font-black">Equipo musical</p><p className="text-sm text-muted-foreground">Estado de la agrupación</p></div><UsersRound className="size-5 text-primary" /></div><div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-muted/50 p-4"><p className="text-3xl font-black">18</p><p className="text-xs text-muted-foreground">Músicos activos</p></div><div className="rounded-2xl bg-emerald-500/10 p-4"><p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">14</p><p className="text-xs text-muted-foreground">Disponibles</p></div><div className="rounded-2xl bg-blue-500/10 p-4"><p className="text-3xl font-black text-blue-600 dark:text-blue-400">11</p><p className="text-xs text-muted-foreground">Confirmados</p></div><div className="rounded-2xl bg-orange-500/10 p-4"><p className="text-3xl font-black text-orange-600 dark:text-orange-400">3</p><p className="text-xs text-muted-foreground">Pendientes</p></div></div></CardContent></Card>
+        <Card className="rounded-[2rem] border shadow-none"><CardContent className="p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-lg font-black">Equipo musical</p><p className="text-sm text-muted-foreground">Datos conectados con el directorio</p></div><UsersRound className="size-5 text-primary" /></div><div className="mt-6 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-muted/50 p-4"><p className="text-3xl font-black">{musicianSummary.total}</p><p className="text-xs text-muted-foreground">Total registrados</p></div><div className="rounded-2xl bg-emerald-500/10 p-4"><p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{musicianSummary.active}</p><p className="text-xs text-muted-foreground">Músicos activos</p></div><div className="rounded-2xl bg-blue-500/10 p-4"><p className="text-3xl font-black text-blue-600 dark:text-blue-400">{musicianSummary.available}</p><p className="text-xs text-muted-foreground">Con disponibilidad</p></div><div className="rounded-2xl bg-orange-500/10 p-4"><p className="text-3xl font-black text-orange-600 dark:text-orange-400">3</p><p className="text-xs text-muted-foreground">Pendientes próximo evento</p></div></div></CardContent></Card>
 
         <Card className="rounded-[2rem] border shadow-none"><CardContent className="p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-lg font-black">Centro de alertas</p><p className="text-sm text-muted-foreground">Situaciones que requieren atención</p></div><Badge className="rounded-full bg-orange-500/10 text-orange-700 hover:bg-orange-500/10 dark:text-orange-400"><BellRing className="mr-1 size-3" /> 4 activas</Badge></div><div className="mt-5 divide-y">{alerts.map((alert) => <button key={alert.text} className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-muted/30 sm:px-2"><span className={`grid size-10 shrink-0 place-items-center rounded-xl ${alert.color}`}><alert.icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{alert.text}</span><span className="text-xs text-muted-foreground">{alert.detail}</span></span><span className="hidden text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:block">{alert.level}</span><ArrowRight className="size-4 text-muted-foreground" /></button>)}</div></CardContent></Card>
       </section>

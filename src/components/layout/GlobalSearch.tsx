@@ -1,15 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, Sparkles } from "lucide-react";
+import { Search, Sparkles, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { navigationGroups } from "@/config/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+
+type MusicianResult = { id: string; first_name: string; last_name: string; specialty: string | null };
 
 export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [query, setQuery] = useState("");
+  const [musicians, setMusicians] = useState<MusicianResult[]>([]);
   const navigate = useNavigate();
-  const { hasPermission } = useAuth();
+  const { membership, hasPermission } = useAuth();
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -21,6 +25,15 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
     window.addEventListener("keydown", listener);
     return () => window.removeEventListener("keydown", listener);
   }, [open, onOpenChange]);
+
+  useEffect(() => {
+    if (!open || query.trim().length < 2 || !membership || !hasPermission("musicians.view")) { setMusicians([]); return; }
+    const term = query.trim().replace(/[,%()]/g, "");
+    const timeout = window.setTimeout(() => {
+      supabase.from("musicians").select("id,first_name,last_name,specialty").eq("organization_id", membership.organizationId).or(`first_name.ilike.%${term}%,last_name.ilike.%${term}%,specialty.ilike.%${term}%`).limit(6).then(({ data }) => setMusicians((data ?? []) as MusicianResult[]));
+    }, 220);
+    return () => window.clearTimeout(timeout);
+  }, [open, query, membership, hasPermission]);
 
   const items = useMemo(() => navigationGroups.flatMap((group) => group.items)
     .filter((item) => !item.phase && (!item.permission || hasPermission(item.permission)))
@@ -38,12 +51,13 @@ export function GlobalSearch({ open, onOpenChange }: { open: boolean; onOpenChan
         <div className="max-h-[360px] overflow-y-auto p-3">
           <p className="px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Accesos disponibles</p>
           {items.map((item) => (
-            <button key={item.path} onClick={() => { navigate(item.path); onOpenChange(false); setQuery(""); }} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-primary/8">
+            <button key={item.path} onClick={() => { navigate(item.path); onOpenChange(false); setQuery(""); }} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-primary/10">
               <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><item.icon className="size-5" /></span>
               <span className="font-semibold">{item.label}</span>
             </button>
           ))}
-          {!items.length && <div className="py-10 text-center"><Sparkles className="mx-auto size-7 text-primary" /><p className="mt-3 font-semibold">Sin resultados en la Fase 1</p><p className="text-sm text-muted-foreground">Los nuevos módulos se incorporarán por fases.</p></div>}
+          {musicians.length > 0 && <><p className="px-3 pb-2 pt-4 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Músicos</p>{musicians.map((musician) => <button key={musician.id} onClick={() => { navigate(`/musicos/${musician.id}`); onOpenChange(false); setQuery(""); }} className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-primary/10"><span className="grid size-10 place-items-center rounded-xl bg-orange-500/10 text-orange-600"><UserRound className="size-5" /></span><span><span className="block font-semibold">{musician.first_name} {musician.last_name}</span><span className="block text-xs text-muted-foreground">{musician.specialty || "Músico"}</span></span></button>)}</>}
+          {!items.length && !musicians.length && <div className="py-10 text-center"><Sparkles className="mx-auto size-7 text-primary" /><p className="mt-3 font-semibold">Sin resultados</p><p className="text-sm text-muted-foreground">Busca por nombre, especialidad o módulo.</p></div>}
         </div>
       </DialogContent>
     </Dialog>

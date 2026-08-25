@@ -9,6 +9,9 @@ import { AppShell } from "@/components/layout/AppShell";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
+import MusicianProfile from "@/pages/MusicianProfile";
+import Musicians from "@/pages/Musicians";
+import MyAvailability from "@/pages/MyAvailability";
 import PendingApproval from "@/pages/PendingApproval";
 import Roles from "@/pages/Roles";
 import Settings from "@/pages/Settings";
@@ -32,6 +35,13 @@ export default function App() {
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AppShell />}>
                     <Route index element={<Index />} />
+                    <Route element={<PermissionRoute permission="portal.use" />}>
+                      <Route path="mi-disponibilidad" element={<MyAvailability />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="musicians.view" />}>
+                      <Route path="musicos" element={<Musicians />} />
+                      <Route path="musicos/:id" element={<MusicianProfile />} />
+                    </Route>
                     <Route element={<PermissionRoute permission="users.view" />}>
                       <Route path="usuarios" element={<Users />} />
                     </Route>
