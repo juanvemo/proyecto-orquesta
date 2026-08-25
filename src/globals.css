@@ -4,98 +4,81 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
+    --background: 270 33% 99%;
+    --foreground: 260 31% 13%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
+    --card-foreground: 260 31% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 260 31% 13%;
+    --primary: 255 90% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 26% 95%;
+    --secondary-foreground: 260 31% 18%;
+    --muted: 260 24% 96%;
+    --muted-foreground: 258 11% 45%;
+    --accent: 254 72% 95%;
+    --accent-foreground: 255 74% 42%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 260 19% 89%;
+    --input: 260 19% 89%;
+    --ring: 255 90% 54%;
+    --radius: 1rem;
+    --sidebar-background: 260 31% 98%;
+    --sidebar-foreground: 260 25% 20%;
+    --sidebar-primary: 255 90% 54%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 255 62% 94%;
+    --sidebar-accent-foreground: 255 70% 38%;
+    --sidebar-border: 260 19% 89%;
+    --sidebar-ring: 255 90% 54%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 258 30% 7%;
+    --foreground: 260 24% 96%;
+    --card: 258 25% 10%;
+    --card-foreground: 260 24% 96%;
+    --popover: 258 25% 10%;
+    --popover-foreground: 260 24% 96%;
+    --primary: 256 92% 68%;
+    --primary-foreground: 258 40% 10%;
+    --secondary: 258 20% 16%;
+    --secondary-foreground: 260 24% 96%;
+    --muted: 258 19% 15%;
+    --muted-foreground: 258 12% 66%;
+    --accent: 256 32% 20%;
+    --accent-foreground: 256 88% 78%;
+    --destructive: 0 63% 43%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 258 18% 20%;
+    --input: 258 18% 22%;
+    --ring: 256 92% 68%;
+    --sidebar-background: 258 29% 8%;
+    --sidebar-foreground: 260 18% 90%;
+    --sidebar-primary: 256 92% 68%;
+    --sidebar-primary-foreground: 258 40% 10%;
+    --sidebar-accent: 256 28% 18%;
+    --sidebar-accent-foreground: 256 88% 82%;
+    --sidebar-border: 258 18% 17%;
+    --sidebar-ring: 256 92% 68%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
+  ::selection { @apply bg-primary/20 text-foreground; }
 }
+
+@layer utilities {
+  .font-display { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+}
+
+.auth-orquesta input { min-height: 46px !important; }
+.auth-orquesta button { min-height: 46px !important; }
+.auth-orquesta a { color: hsl(var(--primary)) !important; }

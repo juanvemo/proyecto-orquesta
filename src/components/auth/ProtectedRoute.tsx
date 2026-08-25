@@ -1,0 +1,34 @@
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { LoaderCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+
+export function ProtectedRoute() {
+  const { session, membership, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="grid size-14 place-items-center rounded-2xl bg-primary/10 text-primary">
+            <LoaderCircle className="size-7 animate-spin" />
+          </div>
+          <div>
+            <p className="font-semibold">Afinando tu espacio de trabajo</p>
+            <p className="text-sm text-muted-foreground">Validando organización y permisos…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!membership || membership.approvalStatus !== "APPROVED") return <Navigate to="/acceso-pendiente" replace />;
+  return <Outlet />;
+}
+
+export function PermissionRoute({ permission }: { permission: string }) {
+  const { hasPermission } = useAuth();
+  if (!hasPermission(permission)) return <Navigate to="/" replace />;
+  return <Outlet />;
+}
