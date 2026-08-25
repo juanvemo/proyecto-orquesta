@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
+import { CelebrationsBanner } from "./CelebrationsBanner";
 import { NavigationClickSound } from "./NavigationClickSound";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
@@ -29,7 +30,10 @@ export function AppShell() {
       </Sheet>
       <div className="lg:pl-[260px]">
         <TopBar onOpenMenu={() => setMobileOpen(true)} />
-        <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 xl:p-8"><Outlet /></main>
+        <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 xl:p-8">
+          <CelebrationsBanner />
+          <Outlet />
+        </main>
       </div>
     </div>
   );

@@ -6,4 +6,5 @@ export interface FinancialTransaction { id:string; account_id:string|null; accou
 export interface BudgetItem { id:string; item_type:"INGRESO"|"EGRESO"; category:string; description:string; estimated_amount:number; }
 export interface FinanceEvent { id:string; name:string; event_date:string; status:string; contracted_value:number; client_name:string; budget_items:BudgetItem[]; actual_income:number; actual_expense:number; }
 export interface FinanceOption { id:string; name:string; }
+export interface RehearsalReceivable { id:string; amount_due:number; status:"PENDIENTE"|"PAGADO"; paid_at:string|null; notes:string|null; musician_name:string; rehearsal_name:string; rehearsal_date:string; collector_name:string; }
 export interface FinanceContext { accounts:FinancialAccount[]; transactions:FinancialTransaction[]; events:FinanceEvent[]; clients:FinanceOption[]; musicians:FinanceOption[]; rehearsal_contributions:{paid:number;pending:number}; }
