@@ -34,6 +34,7 @@ import Repertoire from "@/pages/Repertoire";
 import RegistrationCatalogs from "@/pages/RegistrationCatalogs";
 import Roles from "@/pages/Roles";
 import Settings from "@/pages/Settings";
+import TechnicalProduction from "@/pages/TechnicalProduction";
 import Users from "@/pages/Users";
 import NotFound from "@/pages/NotFound";
 
@@ -94,6 +95,9 @@ export default function App() {
                     </Route>
                     <Route element={<AnyPermissionRoute permissions={["events.manage", "quotes.manage"]} />}>
                       <Route path="eventos" element={<Events />} />
+                    </Route>
+                    <Route element={<AnyPermissionRoute permissions={["technical.manage", "events.manage", "quotes.manage"]} />}>
+                      <Route path="produccion-tecnica" element={<TechnicalProduction />} />
                     </Route>
                     <Route element={<PermissionRoute permission="users.view" />}>
                       <Route path="usuarios" element={<Users />} />

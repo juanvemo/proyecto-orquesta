@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
+import { NavigationClickSound } from "./NavigationClickSound";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
@@ -19,6 +20,7 @@ export function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
+      <NavigationClickSound />
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[260px] border-r bg-sidebar lg:flex lg:flex-col">
         <Brand /><div className="mx-4 mb-5 h-px bg-sidebar-border" /><div className="min-h-0 flex-1 overflow-y-auto"><SidebarNav /></div>
       </aside>

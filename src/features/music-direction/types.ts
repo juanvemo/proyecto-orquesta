@@ -38,7 +38,6 @@ export interface MusicTask {
   event: { id: string; name: string; event_date: string } | null;
   music_task_assignees: TaskAssignee[];
   music_task_comments: Array<{ id: string; author_user_id: string; comment: string; created_at: string }>;
-  music_task_attachments: Array<{ id: string; file_name: string; file_path: string; mime_type: string | null; uploaded_by: string; created_at: string }>;
   music_task_history: Array<{ id:string; action:string; previous_value:Record<string,unknown>|null; new_value:Record<string,unknown>|null; actor_user_id:string|null; created_at:string }>;
 }
 

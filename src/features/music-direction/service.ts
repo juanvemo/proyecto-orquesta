@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { MusicTask, TaskFormValues, TaskStatus } from "./types";
 
-const taskSelect = "*,instrument:instruments(id,name),song:songs(id,name,status),rehearsal:rehearsals(id,name,rehearsal_date,start_time,location),event:events(id,name,event_date),music_task_assignees(*,musician:musicians(id,user_id,first_name,last_name,specialty,photo_url,musician_instruments(is_primary,instrument:instruments(id,name)))),music_task_comments(*),music_task_attachments(*),music_task_history(*)";
+const taskSelect = "*,instrument:instruments(id,name),song:songs(id,name,status),rehearsal:rehearsals(id,name,rehearsal_date,start_time,location),event:events(id,name,event_date),music_task_assignees(*,musician:musicians(id,user_id,first_name,last_name,specialty,photo_url,musician_instruments(is_primary,instrument:instruments(id,name)))),music_task_comments(*),music_task_history(*)";
 
 export async function expandRecurringTasks(organizationId: string) {
   const { error } = await supabase.rpc("expand_recurring_music_tasks", { target_organization_id: organizationId });
@@ -30,21 +30,13 @@ export async function addTaskComment(organizationId: string, taskId: string, use
   if (error) throw error;
 }
 
-export async function uploadTaskEvidence(organizationId: string, taskId: string, assigneeId: string | null, userId: string, file: File) {
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const path = `${organizationId}/${taskId}/${crypto.randomUUID()}-${safeName}`;
-  const { error: uploadError } = await supabase.storage.from("task-evidence").upload(path, file, { contentType: file.type });
-  if (uploadError) throw uploadError;
-  const { error } = await supabase.from("music_task_attachments").insert({ organization_id: organizationId, task_id: taskId, assignee_id: assigneeId, uploaded_by: userId, file_name: file.name, file_path: path, mime_type: file.type, file_size: file.size });
-  if (error) {
-    await supabase.storage.from("task-evidence").remove([path]);
-    throw error;
-  }
+export async function deleteMusicTask(taskId: string) {
+  const { error } = await supabase.rpc("delete_music_task", { target_task_id: taskId });
+  if (error) throw error;
 }
 
-export async function openTaskEvidence(path: string) {
-  const { data, error } = await supabase.storage.from("task-evidence").createSignedUrl(path, 300);
+export async function clearMusicTaskHistory(taskId: string) {
+  const { error } = await supabase.rpc("clear_music_task_history", { target_task_id: taskId });
   if (error) throw error;
-  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
 }
 
