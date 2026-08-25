@@ -65,8 +65,10 @@ export default function App() {
                       <Route path="musicos" element={<Musicians />} />
                       <Route path="musicos/:id" element={<MusicianProfile />} />
                     </Route>
-                    <Route element={<PermissionRoute permission="rehearsals.view" />}>
+                    <Route element={<AnyPermissionRoute permissions={["rehearsals.view", "quotes.manage", "events.manage"]} />}>
                       <Route path="calendario" element={<CalendarPage />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="rehearsals.view" />}>
                       <Route path="ensayos" element={<Rehearsals />} />
                       <Route path="ensayos/:id" element={<RehearsalControl />} />
                     </Route>

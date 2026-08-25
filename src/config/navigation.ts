@@ -16,7 +16,7 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
     { label: "Mi perfil", path: "/mi-perfil", icon: UserRound, permission: "portal.use" },
     { label: "Mi disponibilidad", path: "/mi-disponibilidad", icon: CalendarCheck2, permission: "portal.use" },
     { label: "Mis aportes", path: "/mis-aportes", icon: HandCoins, permission: "portal.use" },
-    { label: "Calendario", path: "/calendario", icon: CalendarDays, permission: "rehearsals.view" },
+    { label: "Calendario", path: "/calendario", icon: CalendarDays, anyPermission: ["rehearsals.view", "quotes.manage", "events.manage"] },
   ] },
   { label: "Operación musical", items: [
     { label: "Músicos", path: "/musicos", icon: UsersRound, permission: "musicians.view" },
