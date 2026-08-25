@@ -52,7 +52,8 @@ export default function Login() {
 
         <section className="flex items-center justify-center px-5 py-10 sm:px-10 lg:px-14">
           <div className="w-full max-w-2xl">
-            <img src={assetUrl("/assets/proyecto-orquesta-logo.png")} alt="Proyecto Orquesta" className="mx-auto mb-8 h-24 w-auto lg:hidden" />
+            <img src={assetUrl("/assets/proyecto-orquesta-logo.png")} alt="Proyecto Orquesta" className="mx-auto mb-5 h-24 w-auto lg:hidden" />
+            <Button asChild className="mb-8 h-12 w-full rounded-xl font-black lg:hidden"><Link to="/solicitar-cotizacion">COTIZA TU EVENTO <ArrowRight className="ml-2 size-4" /></Link></Button>
             <div className="mb-8">
               <p className="mb-2 text-sm font-bold uppercase tracking-[0.18em] text-primary">Portal Proyecto Orquesta</p>
               <h2 className="text-3xl font-black tracking-tight sm:text-4xl">Bienvenido al escenario</h2>
