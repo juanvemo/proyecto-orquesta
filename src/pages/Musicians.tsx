@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { CatalogManager } from "@/features/musicians/CatalogManager";
-import { deleteMusician, getMusicianCatalogs, listMusicians } from "@/features/musicians/service";
+import { deleteMusician, getMusicianCatalogs, listMusicianDirectory, listMusicians } from "@/features/musicians/service";
 import type { Instrument, MusicalRole, Musician } from "@/features/musicians/types";
 import { assetUrl } from "@/lib/assets";
 
@@ -34,6 +34,7 @@ export default function Musicians() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("ALL");
   const [instrument, setInstrument] = useState("ALL");
+  const canViewDetails = hasPermission("musicians.view");
   const canManage = hasPermission("musicians.manage");
   const canDelete = membership?.roleCode === "ADMIN";
 
@@ -41,16 +42,25 @@ export default function Musicians() {
     if (!membership) return;
     setLoading(true);
     try {
-      const [people, catalogs] = await Promise.all([listMusicians(membership.organizationId), getMusicianCatalogs(membership.organizationId)]);
-      setMusicians(people);
-      setInstruments(catalogs.instruments);
-      setRoles(catalogs.roles);
+      if (canViewDetails) {
+        const [people, catalogs] = await Promise.all([listMusicians(membership.organizationId), getMusicianCatalogs(membership.organizationId)]);
+        setMusicians(people);
+        setInstruments(catalogs.instruments);
+        setRoles(catalogs.roles);
+      } else {
+        const people = await listMusicianDirectory(membership.organizationId);
+        setMusicians(people);
+        const uniqueInstruments = new Map<string, Instrument>();
+        people.forEach((person) => person.musician_instruments.forEach((entry) => { if (entry.instrument) uniqueInstruments.set(entry.instrument.id, entry.instrument); }));
+        setInstruments([...uniqueInstruments.values()]);
+        setRoles([]);
+      }
     } catch (error) {
       toast.error("No fue posible cargar el módulo", { description: error instanceof Error ? error.message : undefined });
     } finally {
       setLoading(false);
     }
-  }, [membership]);
+  }, [membership, canViewDetails]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -101,7 +111,7 @@ export default function Musicians() {
       <Tabs defaultValue="directory" className="space-y-5">
         <TabsList className="h-auto rounded-2xl p-1.5">
           <TabsTrigger value="directory" className="rounded-xl"><UsersRound className="mr-2 size-4" />Directorio</TabsTrigger>
-          <TabsTrigger value="catalogs" className="rounded-xl"><SlidersHorizontal className="mr-2 size-4" />Catálogos</TabsTrigger>
+          {canManage && <TabsTrigger value="catalogs" className="rounded-xl"><SlidersHorizontal className="mr-2 size-4" />Catálogos</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="directory" className="space-y-4">
@@ -118,14 +128,14 @@ export default function Musicians() {
               {filtered.map((musician) => {
                 const isSelf = musician.user_id === session?.user.id;
                 return (
-                  <Card key={musician.id} className="group relative h-full cursor-pointer rounded-[2rem] shadow-none transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg" onClick={() => navigate(`/musicos/${musician.id}`)} onKeyDown={(event) => { if (event.target === event.currentTarget && event.key === "Enter") navigate(`/musicos/${musician.id}`); }} role="button" tabIndex={0}>
+                  <Card key={musician.id} className={`group relative h-full rounded-[2rem] shadow-none transition-all duration-300 ${canViewDetails ? "cursor-pointer hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg" : ""}`} onClick={() => { if (canViewDetails) navigate(`/musicos/${musician.id}`); }} onKeyDown={(event) => { if (canViewDetails && event.target === event.currentTarget && event.key === "Enter") navigate(`/musicos/${musician.id}`); }} role={canViewDetails ? "button" : undefined} tabIndex={canViewDetails ? 0 : undefined}>
                     <CardContent className="p-5">
                       <div className="flex items-start gap-4">
                         <span className="grid size-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-primary/10 text-lg font-black text-primary">{musician.photo_url ? <img src={musician.photo_url} alt="" className="h-full w-full object-cover" /> : `${musician.first_name[0]}${musician.last_name[0]}`}</span>
-                        <div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><h2 className="truncate text-lg font-black">{musician.first_name} {musician.last_name}</h2><p className="truncate text-sm text-muted-foreground">{musician.musician_roles.find((item) => item.is_primary)?.musical_role?.name ?? musician.specialty ?? "Sin rol principal"}</p></div><ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" /></div></div>
+                        <div className="min-w-0 flex-1"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><h2 className="truncate text-lg font-black">{musician.first_name} {musician.last_name}</h2><p className="truncate text-sm text-muted-foreground">{musician.musician_roles.find((item) => item.is_primary)?.musical_role?.name ?? musician.specialty ?? "Sin rol principal"}</p></div>{canViewDetails && <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />}</div></div>
                       </div>
                       <div className="mt-5 flex flex-wrap gap-2"><Badge className={`rounded-lg ${statusTone[musician.status]}`}>{musician.status}</Badge>{musician.musician_instruments.map((item) => item.instrument && <Badge key={item.id} variant="outline" className="rounded-lg">{item.instrument.name}</Badge>)}</div>
-                      <div className="mt-5 grid grid-cols-2 gap-3 border-t pt-4 text-xs"><div><p className="text-muted-foreground">Nivel</p><p className="mt-1 font-bold">{musician.level}</p></div><div><p className="text-muted-foreground">Tarifa evento</p><p className="mt-1 font-bold">{formatMoney(musician.event_rate)}</p></div></div>
+                      <div className={`mt-5 grid gap-3 border-t pt-4 text-xs ${canViewDetails ? "grid-cols-2" : "grid-cols-1"}`}><div><p className="text-muted-foreground">Nivel</p><p className="mt-1 font-bold">{musician.level}</p></div>{canViewDetails && <div><p className="text-muted-foreground">Tarifa evento</p><p className="mt-1 font-bold">{formatMoney(musician.event_rate)}</p></div>}</div>
                       {canDelete && <Button variant="ghost" size="sm" disabled={isSelf || deletingId === musician.id} onClick={(event) => { event.stopPropagation(); void remove(musician); }} className="mt-4 w-full rounded-xl text-destructive hover:bg-destructive/10 hover:text-destructive">{deletingId === musician.id ? <LoaderCircle className="mr-2 size-4 animate-spin" /> : <Trash2 className="mr-2 size-4" />}{isSelf ? "Tu ficha está protegida" : "Eliminar músico y usuario"}</Button>}
                     </CardContent>
                   </Card>

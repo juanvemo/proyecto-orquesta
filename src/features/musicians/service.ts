@@ -9,6 +9,12 @@ export async function listMusicians(organizationId: string) {
   return (data ?? []) as unknown as Musician[];
 }
 
+export async function listMusicianDirectory(organizationId: string) {
+  const { data, error } = await supabase.rpc("list_musician_directory", { target_organization_id: organizationId });
+  if (error) throw error;
+  return (data ?? []) as unknown as Musician[];
+}
+
 export async function getMusician(organizationId: string, musicianId: string) {
   const { data, error } = await supabase.from("musicians").select(musicianSelect).eq("organization_id", organizationId).eq("id", musicianId).single();
   if (error) throw error;

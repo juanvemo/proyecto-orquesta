@@ -26,6 +26,7 @@ export default function PendingApproval() {
         <p className="mt-6 text-sm font-bold uppercase tracking-[0.16em] text-primary">Solicitud recibida</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight">Tu acceso está en revisión</h1>
         <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">{statusCopy}</p>
+        {membership?.approvalStatus === "PENDING" && <div className="mt-5 rounded-2xl bg-primary/5 p-4 text-left text-sm leading-relaxed"><p className="font-black text-primary">Cuando recibas la aprobación</p><p className="mt-1 text-muted-foreground">Vuelve al Portal Proyecto Orquesta e ingresa con tu correo y la contraseña que creaste durante el registro.</p></div>}
         <div className="mt-7 rounded-2xl border bg-muted/40 p-4 text-left">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Cuenta</p>
           <p className="mt-1 font-bold">{user?.firstName} {user?.lastName}</p>

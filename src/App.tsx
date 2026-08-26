@@ -73,8 +73,10 @@ export default function App() {
                     <Route element={<PermissionRoute permission="tasks.manage" />}>
                       <Route path="direccion-musical" element={<MusicDirection />} />
                     </Route>
-                    <Route element={<PermissionRoute permission="musicians.view" />}>
+                    <Route element={<AnyPermissionRoute permissions={["musicians.view", "portal.use"]} />}>
                       <Route path="musicos" element={<Musicians />} />
+                    </Route>
+                    <Route element={<PermissionRoute permission="musicians.view" />}>
                       <Route path="musicos/:id" element={<MusicianProfile />} />
                     </Route>
                     <Route element={<AnyPermissionRoute permissions={["rehearsals.view", "quotes.manage", "events.manage", "tasks.manage", "tasks.self"]} />}>

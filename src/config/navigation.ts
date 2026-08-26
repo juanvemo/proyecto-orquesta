@@ -20,7 +20,7 @@ export const navigationGroups: { label: string; items: NavItem[] }[] = [
   ] },
   { label: "Operación musical", items: [
     { label: "Dirección Musical", path: "/direccion-musical", icon: ListTodo, permission: "tasks.manage" },
-    { label: "Músicos", path: "/musicos", icon: UsersRound, permission: "musicians.view" },
+    { label: "Músicos", path: "/musicos", icon: UsersRound, anyPermission: ["musicians.view", "portal.use"] },
     { label: "Ensayos", path: "/ensayos", icon: ClipboardList, permission: "rehearsals.view" },
     { label: "Repertorio", path: "/repertorio", icon: Music2, permission: "repertoire.view" },
     { label: "Eventos", path: "/eventos", icon: Sparkles, anyPermission: ["events.manage", "quotes.manage"] },

@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { assetUrl } from "@/lib/assets";
+import { getAuthRedirectUrl } from "@/lib/authRedirect";
 
 export default function Login() {
   const { session, membership, loading } = useAuth();
@@ -90,7 +91,7 @@ export default function Login() {
                       className: { button: "font-bold shadow-none transition-transform hover:-translate-y-0.5", input: "font-medium", anchor: "font-semibold", label: "font-semibold" },
                     }}
                     localization={{ variables: { sign_in: { email_label: "Correo electrónico", password_label: "Contraseña", button_label: "Entrar a Gestión", loading_button_label: "Ingresando…" } } }}
-                    redirectTo={window.location.origin}
+                    redirectTo={getAuthRedirectUrl()}
                   />
                 </TabsContent>
                 <TabsContent value="signup"><MusicianRegistrationForm /></TabsContent>
