@@ -19,6 +19,7 @@ import Finances from "@/pages/Finances";
 import Index from "@/pages/Index";
 import Login from "@/pages/Login";
 import MusicDirection from "@/pages/MusicDirection";
+import MusicianDashboard from "@/pages/MusicianDashboard";
 import MusicianProfile from "@/pages/MusicianProfile";
 import Musicians from "@/pages/Musicians";
 import MyAvailability from "@/pages/MyAvailability";
@@ -146,6 +147,6 @@ export default function App() {
 function RoleHome() {
   const { membership } = useAuth();
   if (membership?.roleCode === "DIRECTOR_MUSICAL") return <Navigate to="/direccion-musical" replace />;
-  if (membership?.roleCode === "MUSICIAN") return <Navigate to="/mi-trabajo-musical" replace />;
+  if (membership?.roleCode === "MUSICIAN") return <MusicianDashboard />;
   return <Index />;
 }
