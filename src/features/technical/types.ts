@@ -48,6 +48,8 @@ export interface TechnicalMusician {
 export interface TechnicalEvent {
   id: string;
   name: string;
+  organization_name: string;
+  organization_logo_url: string | null;
   event_type: string;
   event_date: string;
   start_time: string;

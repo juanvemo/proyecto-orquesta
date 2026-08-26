@@ -2,7 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type CommunityComment = { id: string; user_id: string; content: string; created_at: string; author_name: string; author_avatar: string | null };
 export type CommunityPost = { id: string; user_id: string; content: string; created_at: string; author_name: string; author_avatar: string | null; comments: CommunityComment[] };
-export type ChatMessage = { id: string; user_id: string; message: string; created_at: string; author_name: string; author_avatar: string | null };
+export type ChatMessage = { id: string; user_id: string; message: string; created_at: string; author_name: string; author_avatar: string | null; author_availability: string };
 
 export async function getCommunityFeed(organizationId: string) {
   const { data, error } = await supabase.rpc("get_community_feed", { target_organization_id: organizationId });

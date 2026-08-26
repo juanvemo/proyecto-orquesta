@@ -1,19 +1,19 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { AttendanceStatus, InvitationStatus, Rehearsal, RehearsalFormValues } from "./types";
+import type { AttendanceStatus, InvitationStatus, PublicRehearsalInvitation, Rehearsal, RehearsalFormValues } from "./types";
 
-const personFields = "id,organization_id,user_id,first_name,last_name,document_type,document_number,birth_date,phone,whatsapp,email,city,photo_url,emergency_contact_name,emergency_contact_phone,observations,level,specialty,experience_years,biography,joined_at,status,participation_type,habitual_rate,event_rate,rehearsal_rate,created_at,updated_at";
+const personFields = "id,organization_id,user_id,first_name,last_name,document_type,document_number,birth_date,phone,whatsapp,email,city,photo_url,emergency_contact_name,emergency_contact_phone,observations,level,specialty,experience_years,biography,joined_at,status,participation_type,habitual_rate,event_rate,rehearsal_rate,current_availability_status,created_at,updated_at";
 const rehearsalSelect = `*,responsible:musicians!rehearsals_responsible_musician_id_fkey(${personFields}),rehearsal_musicians(*,musician:musicians(${personFields})),rehearsal_attendance(*,musician:musicians(${personFields}))`;
 
 export async function listRehearsals(organizationId: string) {
   const { data, error } = await supabase.from("rehearsals").select(rehearsalSelect).eq("organization_id", organizationId).order("rehearsal_date").order("start_time");
   if (error) throw error;
-  return (data ?? []) as unknown as Rehearsal[];
+  return ((data ?? []) as unknown as Rehearsal[]).map(normalizeRehearsal);
 }
 
 export async function getRehearsal(organizationId: string, rehearsalId: string) {
   const { data, error } = await supabase.from("rehearsals").select(rehearsalSelect).eq("organization_id", organizationId).eq("id", rehearsalId).single();
   if (error) throw error;
-  return data as unknown as Rehearsal;
+  return normalizeRehearsal(data as unknown as Rehearsal);
 }
 
 export async function saveRehearsal(organizationId: string, userId: string, values: RehearsalFormValues, rehearsalId?: string) {
@@ -28,13 +28,34 @@ export async function saveRehearsal(organizationId: string, userId: string, valu
   const removed = [...currentIds].filter((musicianId) => !desiredIds.has(musicianId));
   const added = [...desiredIds].filter((musicianId) => !currentIds.has(musicianId));
   if (removed.length) { const { error } = await supabase.from("rehearsal_musicians").delete().eq("rehearsal_id", id).in("musician_id", removed); if (error) throw error; }
-  if (added.length) { const { error } = await supabase.from("rehearsal_musicians").insert(added.map((musicianId) => ({ organization_id: organizationId, rehearsal_id: id, musician_id: musicianId }))); if (error) throw error; }
+  if (added.length) {
+    const { data: invitations, error } = await supabase.from("rehearsal_musicians").insert(added.map((musicianId) => ({ organization_id: organizationId, rehearsal_id: id, musician_id: musicianId }))).select("id");
+    if (error) throw error;
+    await Promise.allSettled((invitations ?? []).map((invitation) => sendRehearsalInvitation(invitation.id)));
+  }
   return id;
 }
 
 export async function updateInvitation(id: string, responseStatus: InvitationStatus, note?: string) {
   const { error } = await supabase.from("rehearsal_musicians").update({ response_status: responseStatus, response_note: note?.trim() || null, responded_at: responseStatus === "PENDIENTE" ? null : new Date().toISOString(), updated_at: new Date().toISOString() }).eq("id", id);
   if (error) throw error;
+}
+
+export async function sendRehearsalInvitation(invitationId: string) {
+  const { error } = await supabase.rpc("send_rehearsal_invitation", { target_invitation_id: invitationId });
+  if (error) throw error;
+}
+
+export async function getPublicRehearsalInvitation(token: string) {
+  const { data, error } = await supabase.rpc("get_public_rehearsal_invitation", { access_token: token });
+  if (error) throw error;
+  return data as PublicRehearsalInvitation | null;
+}
+
+export async function respondToRehearsalInvitation(token: string, action: "ACCEPT" | "DECLINE", note = "") {
+  const { data, error } = await supabase.rpc("respond_to_rehearsal_invitation", { access_token: token, response_action: action, response_message: note || null });
+  if (error) throw error;
+  return data as InvitationStatus;
 }
 
 export async function upsertAttendance(organizationId: string, rehearsalId: string, musicianId: string, status: AttendanceStatus, recordedBy: string, arrivalTime?: string, departureTime?: string, notes?: string) {
@@ -45,4 +66,8 @@ export async function upsertAttendance(organizationId: string, rehearsalId: stri
 export async function updateRehearsalStatus(id: string, status: Rehearsal["status"]) {
   const { error } = await supabase.from("rehearsals").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
   if (error) throw error;
+}
+
+function normalizeRehearsal(rehearsal: Rehearsal): Rehearsal {
+  return { ...rehearsal, rehearsal_musicians: rehearsal.rehearsal_musicians ?? [], rehearsal_attendance: rehearsal.rehearsal_attendance ?? [] };
 }

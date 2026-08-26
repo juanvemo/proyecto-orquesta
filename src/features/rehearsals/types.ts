@@ -13,7 +13,15 @@ export interface RehearsalInvitation {
   response_note: string | null;
   invited_at: string;
   responded_at: string | null;
+  public_token: string;
   musician: Musician | null;
+}
+
+export interface PublicRehearsalInvitation {
+  invitation: { status: InvitationStatus; responded_at: string | null };
+  musician: { name: string };
+  rehearsal: { name: string; date: string; start_time: string; end_time: string; location: string; address: string | null; objective: string; observations: string | null; status: RehearsalStatus };
+  organization: { name: string; logo_url: string | null };
 }
 
 export interface RehearsalAttendance {

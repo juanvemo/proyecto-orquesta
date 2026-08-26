@@ -84,6 +84,7 @@
 .auth-orquesta a { color: hsl(var(--primary)) !important; }
 
 @media print {
+  @page { size: A4; margin: 12mm; }
   body * { visibility: hidden; }
   .rider-print-root, .rider-print-root * { visibility: visible; }
   .rider-print-root {
@@ -98,4 +99,7 @@
     background: white !important;
     color: #1f2937 !important;
   }
+  .rider-document { padding: 0 !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .rider-document section, .rider-document table { break-inside: avoid; }
+  .rider-document tr { break-inside: avoid; }
 }

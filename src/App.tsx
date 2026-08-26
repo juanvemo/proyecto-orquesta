@@ -28,6 +28,7 @@ import MyProfile from "@/pages/MyProfile";
 import PendingApproval from "@/pages/PendingApproval";
 import PublicHome from "@/pages/PublicHome";
 import PublicQuote from "@/pages/PublicQuote";
+import PublicRehearsalInvitation from "@/pages/PublicRehearsalInvitation";
 import QuoteRequestDetail from "@/pages/QuoteRequestDetail";
 import QuoteRequests from "@/pages/QuoteRequests";
 import RehearsalControl from "@/pages/RehearsalControl";
@@ -59,6 +60,7 @@ export default function App() {
                 <Route path="/proyecto-orquesta" element={<PublicHome />} />
                 <Route path="/solicitar-cotizacion" element={<RequestQuote />} />
                 <Route path="/cotizacion/:token" element={<PublicQuote />} />
+                <Route path="/convocatoria/:token" element={<PublicRehearsalInvitation />} />
                 <Route path="/politica-datos" element={<DataPolicy />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/actualizar-clave" element={<ResetPassword />} />
