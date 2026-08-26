@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const [profileResult, membershipResult] = await Promise.all([
-      supabase.from("profiles").select("first_name,last_name,avatar_url,email").eq("id", activeSession.user.id).maybeSingle(),
+      supabase.from("profiles").select("first_name,last_name,avatar_url,email,username,profile_completed_at").eq("id", activeSession.user.id).maybeSingle(),
       supabase
         .from("organization_memberships")
         .select("id,organization_id,approval_status,role_id,role:roles(code,name,role_permissions(permission:permissions(key))),organization:organizations(id,name,logo_url,cover_url,primary_color,currency_code,timezone)")
@@ -69,9 +69,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser({
       id: activeSession.user.id,
       email: profile?.email ?? activeSession.user.email ?? "",
+      username: profile?.username ?? null,
       firstName: profile?.first_name ?? activeSession.user.user_metadata?.first_name ?? "Usuario",
       lastName: profile?.last_name ?? activeSession.user.user_metadata?.last_name ?? "",
       avatarUrl: profile?.avatar_url,
+      profileComplete: Boolean(profile?.profile_completed_at),
     });
 
     const rawMembership = membershipResult.data as unknown as MembershipRow | null;

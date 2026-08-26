@@ -3,7 +3,7 @@ import { LoaderCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 export function ProtectedRoute() {
-  const { session, membership, loading } = useAuth();
+  const { session, user, membership, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -24,6 +24,7 @@ export function ProtectedRoute() {
 
   if (!session) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   if (!membership || membership.approvalStatus !== "APPROVED") return <Navigate to="/acceso-pendiente" replace />;
+  if (user && !user.profileComplete && location.pathname !== "/completar-perfil") return <Navigate to="/completar-perfil" replace />;
   return <Outlet />;
 }
 

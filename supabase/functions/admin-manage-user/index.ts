@@ -26,12 +26,41 @@ serve(async (req) => {
     const action = String(body.action ?? "update");
     const organizationId = String(body.organization_id ?? "");
     const targetUserId = String(body.user_id ?? "");
-    if (!organizationId || !targetUserId) return new Response(JSON.stringify({ error: "Datos incompletos" }), { status: 400, headers });
+    if (!organizationId) return new Response(JSON.stringify({ error: "Datos incompletos" }), { status: 400, headers });
 
     const { data: allowed } = await userClient.rpc("has_org_permission", { target_organization_id: organizationId, permission_key: "users.approve" });
     if (!allowed) return new Response(JSON.stringify({ error: "No tienes permiso para administrar usuarios" }), { status: 403, headers });
 
     const admin = createClient(supabaseUrl, serviceKey);
+
+    if (action === "create") {
+      const firstName = String(body.first_name ?? "").trim();
+      const lastName = String(body.last_name ?? "").trim();
+      const identifier = String(body.identifier ?? "").trim().toLowerCase();
+      const password = String(body.password ?? "");
+      const roleId = String(body.role_id ?? "");
+      const isEmail = identifier.includes("@");
+      const username = isEmail ? null : identifier;
+      if (firstName.length < 2 || lastName.length < 2 || password.length < 8 || !roleId) return new Response(JSON.stringify({ error: "Completa nombre, apellidos, rol y una contraseña de mínimo 8 caracteres" }), { status: 400, headers });
+      if (isEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) return new Response(JSON.stringify({ error: "El correo no es válido" }), { status: 400, headers });
+      if (username && !/^[a-z0-9._-]{3,30}$/.test(username)) return new Response(JSON.stringify({ error: "El usuario debe tener entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo" }), { status: 400, headers });
+      const { data: role } = await admin.from("roles").select("id").eq("id", roleId).eq("organization_id", organizationId).maybeSingle();
+      if (!role) return new Response(JSON.stringify({ error: "El rol seleccionado no es válido" }), { status: 400, headers });
+      const authEmail = isEmail ? identifier : `${username}@usuarios.proyecto-orquesta.local`;
+      const { data: created, error: createError } = await admin.auth.admin.createUser({
+        email: authEmail,
+        password,
+        email_confirm: true,
+        user_metadata: { first_name: firstName, last_name: lastName },
+        app_metadata: { provisioning_method: "admin", organization_id: organizationId, role_id: roleId, username },
+      });
+      if (createError || !created.user) return new Response(JSON.stringify({ error: createError?.message ?? "No fue posible crear el usuario" }), { status: 409, headers });
+      await admin.from("audit_logs").insert({ organization_id: organizationId, user_id: authData.user.id, action: "CREATE", entity_type: "user", entity_id: created.user.id, new_value: { login_identifier: identifier, role_id: roleId, requires_profile_completion: true, email_sent: false } });
+      console.log("[admin-manage-user] Usuario creado sin envío de correo", { actor: authData.user.id, target: created.user.id, loginType: isEmail ? "email" : "username" });
+      return new Response(JSON.stringify({ success: true, user_id: created.user.id, login_identifier: identifier }), { status: 200, headers });
+    }
+
+    if (!targetUserId) return new Response(JSON.stringify({ error: "Usuario requerido" }), { status: 400, headers });
     const { data: membership } = await admin.from("organization_memberships").select("id,role_id,roles(code)").eq("organization_id", organizationId).eq("user_id", targetUserId).maybeSingle();
     if (!membership) return new Response(JSON.stringify({ error: "El usuario no pertenece a esta organización" }), { status: 404, headers });
 

@@ -4,9 +4,11 @@ export type RoleCode = "ADMIN" | "DIRECTOR" | "DIRECTOR_MUSICAL" | "ADMINISTRATI
 export interface AppUser {
   id: string;
   email: string;
+  username: string | null;
   firstName: string;
   lastName: string;
   avatarUrl?: string | null;
+  profileComplete: boolean;
 }
 
 export interface OrganizationIdentity {

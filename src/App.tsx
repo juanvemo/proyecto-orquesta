@@ -31,6 +31,7 @@ import PublicQuote from "@/pages/PublicQuote";
 import PublicRehearsalInvitation from "@/pages/PublicRehearsalInvitation";
 import QuoteRequestDetail from "@/pages/QuoteRequestDetail";
 import QuoteRequests from "@/pages/QuoteRequests";
+import RecoverPassword from "@/pages/RecoverPassword";
 import RehearsalControl from "@/pages/RehearsalControl";
 import Rehearsals from "@/pages/Rehearsals";
 import RequestQuote from "@/pages/RequestQuote";
@@ -63,12 +64,14 @@ export default function App() {
                 <Route path="/convocatoria/:token" element={<PublicRehearsalInvitation />} />
                 <Route path="/politica-datos" element={<DataPolicy />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/recuperar-clave" element={<RecoverPassword />} />
                 <Route path="/actualizar-clave" element={<ResetPassword />} />
                 <Route path="/correo-confirmado" element={<EmailConfirmed />} />
                 <Route path="/acceso-pendiente" element={<PendingApproval />} />
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AppShell />}>
                     <Route index element={<RoleHome />} />
+                    <Route path="completar-perfil" element={<MyProfile firstAccess />} />
                     <Route path="comunidad" element={<Community />} />
                     <Route element={<PermissionRoute permission="portal.use" />}>
                       <Route path="mi-perfil" element={<MyProfile />} />
