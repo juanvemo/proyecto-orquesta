@@ -1,8 +1,9 @@
-export function getAuthRedirectUrl() {
+export type AuthAction = "confirm" | "recovery";
+
+export function getAuthRedirectUrl(action: AuthAction = "confirm") {
   const basePath = import.meta.env.BASE_URL;
-  return basePath === "/"
-    ? `${window.location.origin}/login`
-    : `${window.location.origin}${basePath}`;
+  const landingPath = basePath === "/" ? "/" : basePath;
+  return `${window.location.origin}${landingPath}?auth_action=${action}`;
 }
 
 export function getAppRouteUrl(path: string) {

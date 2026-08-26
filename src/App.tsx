@@ -4,13 +4,16 @@ import { BrowserRouter, HashRouter, Navigate, Route, Routes } from "react-router
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthRedirectGate } from "@/components/auth/AuthRedirectGate";
 import { AnyPermissionRoute, ProtectedRoute, PermissionRoute } from "@/components/auth/ProtectedRoute";
 import { AppShell } from "@/components/layout/AppShell";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import CalendarPage from "@/pages/CalendarPage";
 import Clients from "@/pages/Clients";
 import CommercialFormSettings from "@/pages/CommercialFormSettings";
+import Community from "@/pages/Community";
 import DataPolicy from "@/pages/DataPolicy";
+import EmailConfirmed from "@/pages/EmailConfirmed";
 import Events from "@/pages/Events";
 import Finances from "@/pages/Finances";
 import Index from "@/pages/Index";
@@ -51,6 +54,7 @@ export default function App() {
           <Sonner richColors position="top-right" />
           <Router>
             <AuthProvider>
+              <AuthRedirectGate>
               <Routes>
                 <Route path="/proyecto-orquesta" element={<PublicHome />} />
                 <Route path="/solicitar-cotizacion" element={<RequestQuote />} />
@@ -58,10 +62,12 @@ export default function App() {
                 <Route path="/politica-datos" element={<DataPolicy />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/actualizar-clave" element={<ResetPassword />} />
+                <Route path="/correo-confirmado" element={<EmailConfirmed />} />
                 <Route path="/acceso-pendiente" element={<PendingApproval />} />
                 <Route element={<ProtectedRoute />}>
                   <Route element={<AppShell />}>
                     <Route index element={<RoleHome />} />
+                    <Route path="comunidad" element={<Community />} />
                     <Route element={<PermissionRoute permission="portal.use" />}>
                       <Route path="mi-perfil" element={<MyProfile />} />
                       <Route path="mi-disponibilidad" element={<MyAvailability />} />
@@ -123,6 +129,7 @@ export default function App() {
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </AuthRedirectGate>
             </AuthProvider>
           </Router>
         </TooltipProvider>

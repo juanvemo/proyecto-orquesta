@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Boxes, CalendarCheck2, CalendarDays, ClipboardList, ContactRound, Database, FileText, Gauge, HandCoins, ListTodo, Music2, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
+import { Boxes, CalendarCheck2, CalendarDays, ClipboardList, ContactRound, Database, FileText, Gauge, HandCoins, ListTodo, MessagesSquare, Music2, Settings, SlidersHorizontal, Sparkles, UserRound, UsersRound, UserRoundCog } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -12,6 +12,7 @@ export interface NavItem {
 export const navigationGroups: { label: string; items: NavItem[] }[] = [
   { label: "Principal", items: [
     { label: "Dashboard", path: "/", icon: Gauge, permission: "dashboard.view" },
+    { label: "Comunidad", path: "/comunidad", icon: MessagesSquare },
     { label: "Mi perfil", path: "/mi-perfil", icon: UserRound, permission: "portal.use" },
     { label: "Mi disponibilidad", path: "/mi-disponibilidad", icon: CalendarCheck2, permission: "portal.use" },
     { label: "Mi trabajo musical", path: "/mi-trabajo-musical", icon: ListTodo, permission: "tasks.self" },

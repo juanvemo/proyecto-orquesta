@@ -112,10 +112,10 @@ function PasswordResetForm() {
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setSending(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: `${window.location.origin}/actualizar-clave` });
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), { redirectTo: getAuthRedirectUrl("recovery") });
     setSending(false);
     if (error) toast.error("No fue posible enviar las instrucciones", { description: error.message });
-    else toast.success("Revisa tu correo para restablecer la contraseña");
+    else toast.success("Revisa tu correo. El enlace abrirá el espacio para crear una nueva contraseña.");
   };
   return <form onSubmit={submit} className="space-y-5 py-2"><span className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><KeyRound className="size-5" /></span><div><h3 className="text-xl font-black">Recuperar contraseña</h3><p className="mt-1 text-sm text-muted-foreground">Te enviaremos un enlace seguro a tu correo registrado.</p></div><div><Label>Correo electrónico</Label><Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required className="mt-2 h-11 rounded-xl" /></div><Button disabled={sending} className="h-11 w-full rounded-xl font-bold">{sending ? "Enviando…" : "Enviar instrucciones"}</Button></form>;
 }
