@@ -42,7 +42,7 @@ serve(async (req) => {
       const isEmail = identifier.includes("@");
       const username = isEmail ? null : identifier;
       if (firstName.length < 2 || lastName.length < 2 || password.length < 8 || !roleId) return new Response(JSON.stringify({ error: "Completa nombre, apellidos, rol y una contraseña de mínimo 8 caracteres" }), { status: 400, headers });
-      if (isEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) return new Response(JSON.stringify({ error: "El correo no es válido" }), { status: 400, headers });
+      if (isEmail && (identifier.startsWith("@") || identifier.endsWith("@") || /\s/.test(identifier))) return new Response(JSON.stringify({ error: "El correo no es válido" }), { status: 400, headers });
       if (username && !/^[a-z0-9._-]{3,30}$/.test(username)) return new Response(JSON.stringify({ error: "El usuario debe tener entre 3 y 30 caracteres: letras, números, punto, guion o guion bajo" }), { status: 400, headers });
       const { data: role } = await admin.from("roles").select("id").eq("id", roleId).eq("organization_id", organizationId).maybeSingle();
       if (!role) return new Response(JSON.stringify({ error: "El rol seleccionado no es válido" }), { status: 400, headers });
@@ -55,6 +55,15 @@ serve(async (req) => {
         app_metadata: { provisioning_method: "admin", organization_id: organizationId, role_id: roleId, username },
       });
       if (createError || !created.user) return new Response(JSON.stringify({ error: createError?.message ?? "No fue posible crear el usuario" }), { status: 409, headers });
+
+      const { data: savedProfile, error: profileError } = await admin.from("profiles").update({ first_name: firstName, last_name: lastName, email: authEmail, username, profile_completed_at: null, updated_at: new Date().toISOString() }).eq("id", created.user.id).select("id").single();
+      const { data: savedMembership, error: membershipError } = await admin.from("organization_memberships").upsert({ organization_id: organizationId, user_id: created.user.id, role_id: roleId, approval_status: "APPROVED", approved_by: authData.user.id, approved_at: new Date().toISOString() }, { onConflict: "organization_id,user_id" }).select("id").single();
+      if (profileError || membershipError || !savedProfile || !savedMembership) {
+        await admin.auth.admin.deleteUser(created.user.id);
+        console.error("[admin-manage-user] Alta revertida por error de perfil o membresía", { profileError: profileError?.message, membershipError: membershipError?.message });
+        return new Response(JSON.stringify({ error: "No se pudo completar el perfil y el acceso. El alta fue revertida; puedes intentarlo nuevamente." }), { status: 500, headers });
+      }
+
       await admin.from("audit_logs").insert({ organization_id: organizationId, user_id: authData.user.id, action: "CREATE", entity_type: "user", entity_id: created.user.id, new_value: { login_identifier: identifier, role_id: roleId, requires_profile_completion: true, email_sent: false } });
       console.log("[admin-manage-user] Usuario creado sin envío de correo", { actor: authData.user.id, target: created.user.id, loginType: isEmail ? "email" : "username" });
       return new Response(JSON.stringify({ success: true, user_id: created.user.id, login_identifier: identifier }), { status: 200, headers });
