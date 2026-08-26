@@ -93,13 +93,13 @@ export default function Musicians() {
   };
 
   const active = musicians.filter((item) => item.status === "ACTIVO").length;
-  const available = musicians.filter((item) => item.availability.some((entry) => entry.status === "DISPONIBLE")).length;
+  const available = musicians.filter((item) => item.current_availability_status === "DISPONIBLE" || item.availability.some((entry) => entry.status === "DISPONIBLE")).length;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Operación musical</p><h1 className="mt-2 text-3xl font-black tracking-tight">Músicos</h1><p className="mt-2 text-sm text-muted-foreground">Directorio artístico, roles, instrumentos, tarifas y disponibilidad.</p></div>
-        <Badge variant="outline" className="w-fit rounded-xl">Las fichas nacen del registro de usuarios</Badge>
+        <Badge variant="outline" className="w-fit max-w-full whitespace-normal rounded-xl text-left">Las fichas nacen del registro de usuarios</Badge>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -109,7 +109,7 @@ export default function Musicians() {
       </div>
 
       <Tabs defaultValue="directory" className="space-y-5">
-        <TabsList className="h-auto rounded-2xl p-1.5">
+        <TabsList className="h-auto w-full justify-start overflow-x-auto rounded-2xl p-1.5 sm:w-fit">
           <TabsTrigger value="directory" className="rounded-xl"><UsersRound className="mr-2 size-4" />Directorio</TabsTrigger>
           {canManage && <TabsTrigger value="catalogs" className="rounded-xl"><SlidersHorizontal className="mr-2 size-4" />Catálogos</TabsTrigger>}
         </TabsList>

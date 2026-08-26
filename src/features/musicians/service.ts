@@ -3,22 +3,32 @@ import type { Availability, Instrument, MusicalRole, Musician, MusicianFormValue
 
 const musicianSelect = "*,musician_instruments(id,is_primary,proficiency,instrument:instruments(id,organization_id,name,category,description,is_active)),musician_roles(id,is_primary,musical_role:musical_roles(id,organization_id,name,description,is_active)),availability(*)";
 
+function normalizeMusician(value: unknown): Musician {
+  const musician = value as Musician;
+  return {
+    ...musician,
+    musician_instruments: Array.isArray(musician.musician_instruments) ? musician.musician_instruments : [],
+    musician_roles: Array.isArray(musician.musician_roles) ? musician.musician_roles : [],
+    availability: Array.isArray(musician.availability) ? musician.availability : [],
+  };
+}
+
 export async function listMusicians(organizationId: string) {
   const { data, error } = await supabase.from("musicians").select(musicianSelect).eq("organization_id", organizationId).order("first_name");
   if (error) throw error;
-  return (data ?? []) as unknown as Musician[];
+  return (data ?? []).map(normalizeMusician);
 }
 
 export async function listMusicianDirectory(organizationId: string) {
   const { data, error } = await supabase.rpc("list_musician_directory", { target_organization_id: organizationId });
   if (error) throw error;
-  return (data ?? []) as unknown as Musician[];
+  return (Array.isArray(data) ? data : []).map(normalizeMusician);
 }
 
 export async function getMusician(organizationId: string, musicianId: string) {
   const { data, error } = await supabase.from("musicians").select(musicianSelect).eq("organization_id", organizationId).eq("id", musicianId).single();
   if (error) throw error;
-  return data as unknown as Musician;
+  return normalizeMusician(data);
 }
 
 export async function getMusicianCatalogs(organizationId: string) {

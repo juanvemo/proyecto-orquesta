@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { assetUrl } from "@/lib/assets";
 import { CelebrationsBanner } from "./CelebrationsBanner";
 import { NavigationClickSound } from "./NavigationClickSound";
+import { PageErrorBoundary } from "./PageErrorBoundary";
 import { SidebarNav } from "./SidebarNav";
 import { TopBar } from "./TopBar";
 
@@ -33,9 +34,14 @@ export function AppShell() {
         <TopBar onOpenMenu={() => setMobileOpen(true)} />
         <main className="mx-auto w-full max-w-[1600px] p-4 sm:p-6 xl:p-8">
           <CelebrationsBanner />
-          <Outlet />
+          <SafePageOutlet />
         </main>
       </div>
     </div>
   );
+}
+
+function SafePageOutlet() {
+  const location = useLocation();
+  return <PageErrorBoundary key={location.pathname}><Outlet /></PageErrorBoundary>;
 }
